@@ -8,15 +8,22 @@ public class ScreenTitle : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log("起動");
-
         Debug.Log_cyan("起動", this, 3);
     }
-    
-// ボタンをクリックするとgamen1に移動します
-    public void ButtonClicked () {
-    	Debug.Log("bottun");
+
+    #region Button
+
+    // ボタンをクリックするとingame.unityに移動します
+    public void OnClickGameStartButton () 
+    {
         SceneManager.LoadScene("ingame");
 	}
+
+    public void OnClickRGStartButton()
+    {
+        SceneManager.LoadScene("RhythmGame");
+    }
+
+    #endregion // Button
 
 }
