@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ScreenInGame : MonoBehaviour
 {
@@ -27,6 +28,11 @@ public class ScreenInGame : MonoBehaviour
 
     void Update()
     {
-        
+#if UNITY_EDITOR
+        if (Input.GetKeyDown (KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Title");
+        }
+#endif
     }
 }
