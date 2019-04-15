@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class ScreenTitle : MonoBehaviour
 {
+    [SerializeField] private AudioSource kickAudioSource;
+
     void Start()
     {
         Debug.Log_cyan("起動", this, 3);
@@ -16,14 +18,30 @@ public class ScreenTitle : MonoBehaviour
     // ボタンをクリックするとingame.unityに移動します
     public void OnClickGameStartButton () 
     {
-        SceneManager.LoadScene("ingame");
-	}
+        this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
+        StartCoroutine(loadSceneCoroutine("ingame"));
+    }
 
     public void OnClickRGStartButton()
     {
-        SceneManager.LoadScene("RhythmGame");
+        this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
+        StartCoroutine(loadSceneCoroutine("RhythmGame"));
+
     }
 
     #endregion // Button
 
+
+    #region Private
+
+    private IEnumerator loadSceneCoroutine(string sceneName)
+    {
+        while (this.kickAudioSource.isPlaying)
+        {
+            yield return null;
+        }
+        SceneManager.LoadScene(sceneName);
+    }
+
+    #endregion // Private
 }
