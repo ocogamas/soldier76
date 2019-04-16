@@ -5,6 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class ScreenRhythmGame : MonoBehaviour
 {
+    [SerializeField] private DrumObject drumObject;
+    [SerializeField] private AudioSource drumAudioSource;
+
+    private void Start()
+    {
+        this.drumObject.RegisterCallbackOnTouchDown(onTouchDownDrumObject);
+    }
 
     private void Update()
     {
@@ -14,5 +21,12 @@ public class ScreenRhythmGame : MonoBehaviour
             SceneManager.LoadScene("Title");
         }
 #endif
+
     }
+
+    private void onTouchDownDrumObject()
+    {
+        this.drumAudioSource.PlayOneShot(this.drumAudioSource.clip);
+    }
+
 }
