@@ -86,6 +86,19 @@ public class ScreenTitle : MonoBehaviour
             string sheetId = spreadSheetInfoDictionary[recordData.stageName];
 
             Debug.Log_orange("downloadMusicScoreListIfNeeded > sheetId = " + sheetId, this);
+
+            string url = this.networkManager.GetSpreadSheetURLWithSheetId(sheetId);
+            string result = this.networkManager.Request(url, recordData.stageName);
+
+            ResponseObjectMusicScore masterMusicScore = JsonFx.Json.JsonReader.Deserialize<ResponseObjectMusicScore>(result);
+            masterMusicScore.SetupEntry();
+            MasterMusicScoreRecordDataList scoreRecordDataList = masterMusicScore.GetDataList();
+
+            for (int i=0; i<scoreRecordDataList.dataList.Count; i++)
+            {
+                MasterMusicScoreRecordData scoreRecordData = scoreRecordDataList.dataList[i];
+                Debug.Log_cyan("downloadMusicScoreListIfNeeded > i=" + i + ", position = " + scoreRecordData.position + ", drum = " + scoreRecordData.drum, this);
+            }
         }
 
 
