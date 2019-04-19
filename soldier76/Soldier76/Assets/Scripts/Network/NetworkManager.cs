@@ -11,10 +11,10 @@ public class NetworkManager : MonoBehaviour
     // スプレッドシート自体のID
     private const string SPREAD_SHEET_ID = "1NP-doRS-1pZrS5zKuKM-V61bSkAPvXz308tQbo875qI";
 
-    // メインシートのキー
+    // メインシートのシートID
     // メインシートは１つのスプレッドシートに１つだけ存在する一番偉いシートのこと
-    // スプレッドシートの仕様で、メインシートのキーはod6固定である。
-    private const string SPREAD_SHEET_MAIN_KEY = "od6";
+    // スプレッドシートの仕様で、メインシートのシートIDはod6固定である。
+    private const string SPREAD_SHEET_MAIN_SHEET_ID = "od6";
 
     // SPREAD_SHEET_IDと、シートのキーを与えることで、
     // 指定したシートのJSONを得るURL
@@ -23,17 +23,28 @@ public class NetworkManager : MonoBehaviour
     // サブシートのリストを得るためのJSONのURL
     private const string SPREAD_SHEET_SUB_SHEET_INFO_URL = "https://spreadsheets.google.com/feeds/worksheets/{0}/public/basic";
 
-    public string GetSpreadSheetURLWithKey(string key)
+    // SpreadSheetのIDからそのシートのJsonURLを得る
+    public string GetSpreadSheetURLWithSheetId(string sheetId)
     {
-        return string.Format(SPREAD_SHEET_URL, SPREAD_SHEET_ID, key);
+        return string.Format(SPREAD_SHEET_URL, SPREAD_SHEET_ID, sheetId);
     }
 
+    // サブシートのリストを取得する通信を行う
+    public string RequestSubSpreadSheetList()
+    {
+        string url = string.Format(SPREAD_SHEET_SUB_SHEET_INFO_URL, SPREAD_SHEET_ID);
+        return Request(url, "サブシートリスト");
+    }
+
+    // メインシートを取得する通信を行う
     public string RequestMainSpreadSheet()
     {
-        string url = GetSpreadSheetURLWithKey(SPREAD_SHEET_MAIN_KEY);
+        string url = GetSpreadSheetURLWithSheetId(SPREAD_SHEET_MAIN_SHEET_ID);
         return Request(url, "メインシート");
     }
 
+
+    // URLを指定して通信を行う
     public string Request(string url, string title)
     {
         WebRequest request = WebRequest.Create(url);

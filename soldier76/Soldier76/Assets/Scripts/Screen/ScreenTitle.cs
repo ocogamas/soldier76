@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class ScreenTitle : MonoBehaviour
 {
@@ -69,7 +70,25 @@ public class ScreenTitle : MonoBehaviour
 
     private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage)
     {
-        // TODO:kondo 必要があれば譜面をDLする
+        Dictionary<string, string> spreadSheetInfoDictionary = SpreadSheetInfoUtility.GetSpreadSheetInfoDictionary(this.networkManager);
+
+        // TODO:kondo 
+        // 必要があれば譜面をDLする
+        // 各譜面のバージョン情報を保存しておき、
+        // 保存していた値とDLした値が異なっていれば、
+        // 譜面をダウンロードすること
+        //
+        //
+
+        foreach (MasterStageRecordData recordData in this.masterStageRecordDataList.dataList)
+        {         
+ 
+            string sheetId = spreadSheetInfoDictionary[recordData.stageName];
+
+            Debug.Log_orange("downloadMusicScoreListIfNeeded > sheetId = " + sheetId, this);
+        }
+
+
         yield return null;
     }
 
