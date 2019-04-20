@@ -8,14 +8,20 @@ using System.IO;
 public class ScreenTitle : MonoBehaviour
 {
     [SerializeField] private AudioSource kickAudioSource;
-
     [SerializeField] private NetworkManager networkManager;
 
+    [SerializeField] private Text informationText;
+    [SerializeField] private Text stageText;
+
     private MasterStageRecordDataList masterStageRecordDataList;
+
+    private int currentStageIndex = 0;
 
     void Start()
     {
         Debug.Log_cyan("起動", this, 3);
+
+        this.informationText.text = "起動";
 
         StartCoroutine(checkUpdate());
     }
@@ -33,7 +39,40 @@ public class ScreenTitle : MonoBehaviour
     {
         this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
         StartCoroutine(loadSceneCoroutine("RhythmGame"));
+    }
 
+    public void OnClickMinusButton()
+    {
+        if (this.masterStageRecordDataList != null && this.masterStageRecordDataList.dataList != null)
+        {
+            if (this.currentStageIndex == 0)
+            {
+                this.currentStageIndex = this.masterStageRecordDataList.dataList.Count - 1;
+            }
+            else
+            {
+                this.currentStageIndex--;
+            }
+
+            this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
+        }
+    }
+
+    public void OnClickPlusButton()
+    {
+        if (this.masterStageRecordDataList != null && this.masterStageRecordDataList.dataList != null)
+        {
+            if (this.currentStageIndex == this.masterStageRecordDataList.dataList.Count - 1)
+            {
+                this.currentStageIndex = 0;
+            }
+            else
+            {
+                this.currentStageIndex++;
+            }
+
+            this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
+        }
     }
 
     #endregion // Button
@@ -52,8 +91,10 @@ public class ScreenTitle : MonoBehaviour
 
     private IEnumerator checkUpdate()
     {
+        this.informationText.text = "MainSpreadSheet通信";
         string mainSpreadSheet = this.networkManager.RequestMainSpreadSheet();
 
+        this.informationText.text = "MainSpreadSheet通信成功";
         ResponseObjectMasterStage masterStage = JsonFx.Json.JsonReader.Deserialize<ResponseObjectMasterStage>(mainSpreadSheet);
 
         masterStage.SetupEntry();
@@ -71,6 +112,8 @@ public class ScreenTitle : MonoBehaviour
     private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage)
     {
         Dictionary<string, string> spreadSheetInfoDictionary = SpreadSheetInfoUtility.GetSpreadSheetInfoDictionary(this.networkManager);
+
+        this.informationText.text = "SubSpreadSheet一覧取得の通信に成功";
 
         // TODO:kondo 
         // 必要があれば譜面をDLする
@@ -100,6 +143,10 @@ public class ScreenTitle : MonoBehaviour
                 Debug.Log_cyan("downloadMusicScoreListIfNeeded > i=" + i + ", position = " + scoreRecordData.position + ", drum = " + scoreRecordData.drum, this);
             }
         }
+
+        this.informationText.text = "譜面のダウンロード完了";
+
+        this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
 
 
         yield return null;
