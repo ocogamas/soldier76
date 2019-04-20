@@ -22,6 +22,8 @@ public class ScreenRhythmGame : MonoBehaviour
         }
 #endif
 
+        this.drumObject.transform.Rotate(0.05f, -0.01f, 0.001f);
+
     }
 
     private void onTouchDownDrumObject()
