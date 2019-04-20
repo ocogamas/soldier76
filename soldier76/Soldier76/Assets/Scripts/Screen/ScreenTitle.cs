@@ -17,11 +17,16 @@ public class ScreenTitle : MonoBehaviour
 
     private int currentStageIndex = 0;
 
+    // 譜面の名前をキーにして譜面を格納する
+    private Dictionary<string, MasterMusicScoreRecordDataList> musicScoreDictionary;
+
     void Start()
     {
         Debug.Log_cyan("起動", this, 3);
 
         this.informationText.text = "起動";
+
+        this.musicScoreDictionary = new Dictionary<string, MasterMusicScoreRecordDataList>();
 
         StartCoroutine(checkUpdate());
     }
@@ -38,6 +43,12 @@ public class ScreenTitle : MonoBehaviour
     public void OnClickRGStartButton()
     {
         this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
+
+        MasterStageRecordData stageRecordData = this.masterStageRecordDataList.dataList[this.currentStageIndex];
+
+        RhythmGameDataManager.masterStageRecordData = stageRecordData;
+        RhythmGameDataManager.musicScoreRecordDataList = this.musicScoreDictionary[stageRecordData.stageName];
+
         StartCoroutine(loadSceneCoroutine("RhythmGame"));
     }
 
@@ -136,6 +147,8 @@ public class ScreenTitle : MonoBehaviour
             ResponseObjectMusicScore masterMusicScore = JsonFx.Json.JsonReader.Deserialize<ResponseObjectMusicScore>(result);
             masterMusicScore.SetupEntry();
             MasterMusicScoreRecordDataList scoreRecordDataList = masterMusicScore.GetDataList();
+
+            this.musicScoreDictionary.Add(recordData.stageName, scoreRecordDataList);
 
             for (int i=0; i<scoreRecordDataList.dataList.Count; i++)
             {
