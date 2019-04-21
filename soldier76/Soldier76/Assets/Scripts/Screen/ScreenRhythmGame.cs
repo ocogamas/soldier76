@@ -10,8 +10,10 @@ public class ScreenRhythmGame : MonoBehaviour
     {
         Init,
         EnemyReady,
+        EnemyCountDown,
         EnemyTurn,
         PlayerReady,
+        PlayerCountDown,
         PlayerTurn,
         Clear,
     }
@@ -21,7 +23,7 @@ public class ScreenRhythmGame : MonoBehaviour
 
     [SerializeField] private DrumObject drumObject;
     [SerializeField] private AudioSource drumAudioSource;
-    [SerializeField] private Text countdownText;
+    [SerializeField] private Text timerText;
 
     #endregion // SerializeField
 
@@ -87,14 +89,17 @@ public class ScreenRhythmGame : MonoBehaviour
         {
             case GameState.Init:
                 {
-                    this.countDownTimer = 3.0f;
                     initProcess();
-                    changeState(GameState.EnemyReady);
                     break;
                 }
             case GameState.EnemyReady:
                 {
                     enemyReadyProcess();
+                    break;
+                }
+            case GameState.EnemyCountDown:
+                {
+                    enemyCountDownProcess();
                     break;
                 }
             case GameState.EnemyTurn:
@@ -105,6 +110,11 @@ public class ScreenRhythmGame : MonoBehaviour
             case GameState.PlayerReady:
                 {
                     playerReadyProcess();
+                    break;
+                }
+            case GameState.PlayerCountDown:
+                {
+                    playerCountDownProcess();
                     break;
                 }
             case GameState.PlayerTurn:
@@ -133,14 +143,29 @@ public class ScreenRhythmGame : MonoBehaviour
                 data.time = oneProgressTime * (float)data.position;
                 Debug.Log_cyan("time = " + data.time + ", posi = " + data.position, this);
             }
-
-
         }
+
+        this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
+        this.countDownTimer = 2.0f;
+        changeState(GameState.EnemyReady);
     }
 
     private void enemyReadyProcess()
     {
-        this.countdownText.text = this.countDownTimer.ToString("0.00");
+        this.timerText.text = "ENEMY\nTURN";
+
+        this.countDownTimer -= Time.deltaTime;
+        if (this.countDownTimer <= 0.0f)
+        {
+            this.countDownTimer = 3.0f;
+            this.timerText.color = new Color(1.0f, 0.2f, 0.2f);
+            changeState(GameState.EnemyCountDown);            
+        }
+    }
+
+    private void enemyCountDownProcess()
+    {
+        this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
 
         this.countDownTimer -= Time.deltaTime;
         if (this.countDownTimer <= 0.0f)
@@ -150,13 +175,13 @@ public class ScreenRhythmGame : MonoBehaviour
 
             this.musicScoreProgressIndex = 0;
 
-            this.countdownText.color = new Color(1.0f, 0.2f, 0.2f);
+            this.timerText.color = new Color(0.2f, 1.0f, 0.2f);
         }
     }
 
     private void enemyTurnProcess()
     {
-        this.countdownText.text = this.enemyTimer.ToString("0.00");
+        this.timerText.text = this.enemyTimer.ToString("0.00");
 
         for (; this.musicScoreProgressIndex < RhythmGameDataManager.musicScoreRecordDataList.dataList.Count; this.musicScoreProgressIndex++)
         {
@@ -180,8 +205,8 @@ public class ScreenRhythmGame : MonoBehaviour
 
         if (this.musicScoreProgressIndex >= RhythmGameDataManager.musicScoreRecordDataList.dataList.Count)
         {
-            this.countdownText.color = new Color(0.0f, 0.4f, 1.0f);
-            this.countDownTimer = 3.0f;
+            this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
+            this.countDownTimer = 2.0f;
             changeState(GameState.PlayerReady);
         }
 
@@ -191,7 +216,19 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private void playerReadyProcess()
     {
-        this.countdownText.text = this.countDownTimer.ToString("0.00");
+        this.timerText.text = "PLAYER\nTURN";
+        this.countDownTimer -= Time.deltaTime;
+        if (this.countDownTimer <= 0.0f)
+        {
+            this.countDownTimer = 3.0f;
+            this.timerText.color = new Color(0.2f, 0.2f, 1.0f);
+            changeState(GameState.PlayerCountDown);
+        }
+    }
+
+    private void playerCountDownProcess()
+    {
+        this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
         this.countDownTimer -= Time.deltaTime;
         if (this.countDownTimer <= 0.0f)
         {
@@ -200,15 +237,16 @@ public class ScreenRhythmGame : MonoBehaviour
 
             this.musicScoreProgressIndex = 0;
 
-            this.countdownText.color = new Color(1.0f, 0.2f, 0.2f);
+            this.timerText.color = new Color(0.2f, 1.0f, 0.2f);
         }
     }
 
     private void playerTurnProcess()
     {
-        this.countdownText.text = this.playerTimer.ToString("0.00");
+        this.timerText.text = this.playerTimer.ToString("0.00");
 
-       
+        this.playerTimer += Time.deltaTime;
+       // TODO:kondo
     }
 
     private void clearProcess()
