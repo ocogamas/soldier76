@@ -12,4 +12,7 @@ public class MasterMusicScoreRecordData
 
     // 譜面の座標の時刻
     public float time;
+
+    // 判定が終わったらTrue
+    public bool isJudgeDone;
 }
