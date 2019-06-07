@@ -13,6 +13,9 @@ public class ScreenTitle : MonoBehaviour
     [SerializeField] private Text informationText;
     [SerializeField] private Text stageText;
 
+    [SerializeField] private GameObject titleRoot;
+    [SerializeField] private GameObject menuRoot;
+
     private MasterStageRecordDataList masterStageRecordDataList;
 
     private int currentStageIndex = 0;
@@ -24,11 +27,10 @@ public class ScreenTitle : MonoBehaviour
     {
         Debug.Log_cyan("起動", this, 3);
 
-        this.informationText.text = "起動";
+        this.titleRoot.SetActive(true);
+        this.menuRoot.SetActive(false);
 
         this.musicScoreDictionary = new Dictionary<string, MasterMusicScoreRecordDataList>();
-
-        StartCoroutine(checkUpdate());
     }
 
     #region Button
@@ -38,6 +40,16 @@ public class ScreenTitle : MonoBehaviour
     {
         this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
         StartCoroutine(loadSceneCoroutine("ingame"));
+    }
+
+
+    /// <summary>
+    /// タイトル画面のスタートボタン
+    /// これを押したらマスタデータとか落とす
+    /// </summary>
+    public void OnClickTitleStartButton()
+    {
+        StartCoroutine(checkUpdate());
     }
 
     public void OnClickRGStartButton()
@@ -114,8 +126,11 @@ public class ScreenTitle : MonoBehaviour
 
         if (this.masterStageRecordDataList != null)
         {
-            StartCoroutine(downloadMusicScoreListIfNeeded(masterStage));
+           　yield return StartCoroutine(downloadMusicScoreListIfNeeded(masterStage));
         }
+
+        this.titleRoot.SetActive(false);
+        this.menuRoot.SetActive(true);
 
         yield return null;
     }
