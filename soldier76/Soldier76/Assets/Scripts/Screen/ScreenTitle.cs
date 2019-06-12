@@ -115,9 +115,13 @@ public class ScreenTitle : MonoBehaviour
     private IEnumerator checkUpdate()
     {
         this.informationText.text = "MainSpreadSheet通信";
+        yield return null;
+        
         string mainSpreadSheet = this.networkManager.RequestMainSpreadSheet();
 
         this.informationText.text = "MainSpreadSheet通信成功";
+        yield return null;
+        
         ResponseObjectMasterStage masterStage = JsonFx.Json.JsonReader.Deserialize<ResponseObjectMasterStage>(mainSpreadSheet);
 
         masterStage.SetupEntry();
@@ -140,6 +144,7 @@ public class ScreenTitle : MonoBehaviour
         Dictionary<string, string> spreadSheetInfoDictionary = SpreadSheetInfoUtility.GetSpreadSheetInfoDictionary(this.networkManager);
 
         this.informationText.text = "SubSpreadSheet一覧取得の通信に成功";
+        yield return null;
 
         // TODO:kondo 
         // 必要があれば譜面をDLする
@@ -151,6 +156,8 @@ public class ScreenTitle : MonoBehaviour
 
         foreach (MasterStageRecordData recordData in this.masterStageRecordDataList.dataList)
         {         
+        	this.informationText.text = "譜面読み込み中 " + recordData.stageName;
+            yield return null;
  
             string sheetId = spreadSheetInfoDictionary[recordData.stageName];
 
