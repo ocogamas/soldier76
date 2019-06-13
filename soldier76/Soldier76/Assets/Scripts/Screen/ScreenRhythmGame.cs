@@ -22,7 +22,12 @@ public class ScreenRhythmGame : MonoBehaviour
     #region SerializeField
 
     [SerializeField] private DrumObject drumObject;
+    [SerializeField] private DrumObject snareObject;
+    [SerializeField] private DrumObject hihatObject;
     [SerializeField] private AudioSource drumAudioSource;
+    [SerializeField] private AudioSource snareAudioSource;
+    [SerializeField] private AudioSource hihatAudioSource;
+    
     [SerializeField] private Text timerText;
 
     [SerializeField] private Text perfectCountText;
@@ -68,6 +73,8 @@ public class ScreenRhythmGame : MonoBehaviour
     private void Start()
     {
         this.drumObject.RegisterCallbackOnTouchDown(onTouchDownDrumObject);
+        this.snareObject.RegisterCallbackOnTouchDown(onTouchDownSnareObject);
+        this.hihatObject.RegisterCallbackOnTouchDown(onTouchDownHihatObject);
 
         changeState(GameState.Init);
     }
@@ -81,7 +88,10 @@ public class ScreenRhythmGame : MonoBehaviour
         }
 #endif
 
-        this.drumObject.transform.Rotate(0.05f, -0.01f, 0.001f);
+
+        this.drumObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
+        this.snareObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
+        this.hihatObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
 
         inGameMainProcess();
     }
@@ -94,8 +104,6 @@ public class ScreenRhythmGame : MonoBehaviour
     private void onTouchDownDrumObject()
     {
         this.drumAudioSource.PlayOneShot(this.drumAudioSource.clip);
-
-
 
         if (this.gameState == GameState.PlayerCountDown || this.gameState == GameState.PlayerTurn)
         {
@@ -128,6 +136,20 @@ public class ScreenRhythmGame : MonoBehaviour
                 this.uselessMissCountText.text = this.uselessMissCount.ToString();
             }
         }
+    }
+    
+    private void onTouchDownSnareObject()
+    {
+    	this.snareAudioSource.PlayOneShot(this.snareAudioSource.clip);
+    	
+    	// TODO:kondo
+    }    
+    
+    private void onTouchDownHihatObject()
+    {
+    	this.hihatAudioSource.PlayOneShot(this.hihatAudioSource.clip);
+    	
+    	// TODO:kondo
     }
 
     #endregion // Action
@@ -316,13 +338,18 @@ public class ScreenRhythmGame : MonoBehaviour
         this.progressTimer += Time.deltaTime;
         this.playerTimer += Time.deltaTime;
 
+        // クリア判定
+        int lastIndex = RhythmGameDataManager.musicScoreRecordDataList.dataList.Count-1;
+        if (RhythmGameDataManager.musicScoreRecordDataList.dataList[lastIndex].time + 5 < this.playerTimer)
+        {
+        	changeState(GameState.Clear);
+        }
 
-       // TODO:kondo
     }
 
     private void clearProcess()
-    {
-
+    {          
+    	SceneManager.LoadScene("Title");
     }
 
     #endregion // InGameProcess

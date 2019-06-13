@@ -31,18 +31,30 @@ public class ResponseObjectMusicScore
 
         foreach (Dictionary<string, object> dic in this.entry)
         {
-            string position = ResponseObjectManager.GetStringFromDictionary(dic, "position");
-            string drum = ResponseObjectManager.GetStringFromDictionary(dic, "drum");
-
             MasterMusicScoreRecordData data = new MasterMusicScoreRecordData();
+
+        	string position = ResponseObjectManager.GetStringFromDictionary(dic, "position");
             data.position = uint.Parse(position);
+
+            string drum = ResponseObjectManager.GetStringFromDictionary(dic, "drum");
             if (uint.TryParse(drum, out data.drum) == false)
             {
                 data.drum = 0;
             }
+            
+            string snare = ResponseObjectManager.GetStringFromDictionary(dic, "snare");
+            if (uint.TryParse(snare, out data.snare) == false)
+            {
+            	data.snare = 0;
+            }
+                       
+            string hihat = ResponseObjectManager.GetStringFromDictionary(dic, "hihat");
+            if (uint.TryParse(snare, out data.hihat) == false)
+            {
+            	data.hihat = 0;
+            }
+            
             list.Add(data);
-
-            Debug.Log_lime("更新確認データ抽出　position=" + position + ", drum = " + drum);
         }
 
         dataList.dataList = list;

@@ -41,7 +41,7 @@ public class ResponseObjectMasterStage
             data.version   = version;
             list.Add(data);
 
-            Debug.Log_lime("更新確認データ抽出　stageName=" + stageName + ", bpm = " + bpm + ", version = " + version);
+            //Debug.Log_lime("更新確認データ抽出　stageName=" + stageName + ", bpm = " + bpm + ", version = " + version);
         }
 
         dataList.dataList = list;

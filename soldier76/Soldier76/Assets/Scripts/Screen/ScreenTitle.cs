@@ -7,6 +7,8 @@ using System.IO;
 
 public class ScreenTitle : MonoBehaviour
 {
+	#region Serialize Field
+	
     [SerializeField] private AudioSource kickAudioSource;
     [SerializeField] private NetworkManager networkManager;
 
@@ -15,6 +17,8 @@ public class ScreenTitle : MonoBehaviour
 
     [SerializeField] private GameObject titleRoot;
     [SerializeField] private GameObject menuRoot;
+    
+    #endregion
 
     private MasterStageRecordDataList masterStageRecordDataList;
 
@@ -23,25 +27,20 @@ public class ScreenTitle : MonoBehaviour
     // 譜面の名前をキーにして譜面を格納する
     private Dictionary<string, MasterMusicScoreRecordDataList> musicScoreDictionary;
 
+    #region Mono
+    
     void Start()
     {
-        Debug.Log_cyan("起動", this, 3);
-
         this.titleRoot.SetActive(true);
         this.menuRoot.SetActive(false);
 
         this.musicScoreDictionary = new Dictionary<string, MasterMusicScoreRecordDataList>();
     }
+    
+    #endregion // Mono
+    
 
     #region Button
-
-    // ボタンをクリックするとingame.unityに移動します
-    public void OnClickGameStartButton () 
-    {
-        this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
-        StartCoroutine(loadSceneCoroutine("ingame"));
-    }
-
 
     /// <summary>
     /// タイトル画面のスタートボタン
@@ -114,7 +113,7 @@ public class ScreenTitle : MonoBehaviour
 
     private IEnumerator checkUpdate()
     {
-        this.informationText.text = "MainSpreadSheet通信";
+        this.informationText.text = "MainSpreadSheet通信開始";
         yield return null;
         
         string mainSpreadSheet = this.networkManager.RequestMainSpreadSheet();
@@ -141,9 +140,12 @@ public class ScreenTitle : MonoBehaviour
 
     private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage)
     {
+        this.informationText.text = "SubSpreadSheet一覧取得の通信開始";
+        yield return null;
+        
         Dictionary<string, string> spreadSheetInfoDictionary = SpreadSheetInfoUtility.GetSpreadSheetInfoDictionary(this.networkManager);
 
-        this.informationText.text = "SubSpreadSheet一覧取得の通信に成功";
+        this.informationText.text = "SubSpreadSheet一覧取得の通信成功";
         yield return null;
 
         // TODO:kondo 
@@ -161,7 +163,7 @@ public class ScreenTitle : MonoBehaviour
  
             string sheetId = spreadSheetInfoDictionary[recordData.stageName];
 
-            Debug.Log_orange("downloadMusicScoreListIfNeeded > sheetId = " + sheetId, this);
+            //Debug.Log_orange("downloadMusicScoreListIfNeeded > sheetId = " + sheetId, this);
 
             string url = this.networkManager.GetSpreadSheetURLWithSheetId(sheetId);
             string result = this.networkManager.Request(url, recordData.stageName);
@@ -175,11 +177,11 @@ public class ScreenTitle : MonoBehaviour
             for (int i=0; i<scoreRecordDataList.dataList.Count; i++)
             {
                 MasterMusicScoreRecordData scoreRecordData = scoreRecordDataList.dataList[i];
-                Debug.Log_cyan("downloadMusicScoreListIfNeeded > i=" + i + ", position = " + scoreRecordData.position + ", drum = " + scoreRecordData.drum, this);
+                //Debug.Log_cyan("downloadMusicScoreListIfNeeded > i=" + i + ", position = " + scoreRecordData.position + ", drum = " + scoreRecordData.drum, this);
             }
         }
 
-        this.informationText.text = "譜面のダウンロード完了";
+        this.informationText.text = "譜面の読み込み完了";
 
         this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
 

@@ -9,6 +9,12 @@ public class MasterMusicScoreRecordData
 
     // ドラム。1ならばノートあり
     public uint drum;
+    
+    // スネア。1ならばノーとあり
+    public uint snare;
+    
+    // ハイハット。１ならばノーとあり
+    public uint hihat;
 
     // 譜面の座標の時刻
     public float time;

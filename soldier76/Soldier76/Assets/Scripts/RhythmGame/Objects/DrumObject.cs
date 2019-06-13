@@ -5,6 +5,13 @@ using UnityEngine;
 public class DrumObject : MonoBehaviour
 {
     [SerializeField] private Animator animator;
+    
+    [SerializeField] private GameObject bodyObject;
+    
+    public GameObject BodyObject() 
+    {
+    	return this.bodyObject;
+    }
 
     private System.Action onTouchDown;
 
@@ -15,7 +22,6 @@ public class DrumObject : MonoBehaviour
 
     public void OnTouchDown()
     {
-        Debug.Log_yellow("OnTouchDown");
         this.onTouchDown?.Invoke();
         
         this.animator.Play("DrumAnimation", 0, 0);
