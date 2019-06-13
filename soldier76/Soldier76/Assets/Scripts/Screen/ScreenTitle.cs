@@ -20,12 +20,10 @@ public class ScreenTitle : MonoBehaviour
     
     #endregion
 
-    private MasterStageRecordDataList masterStageRecordDataList;
+    
 
     private int currentStageIndex = 0;
 
-    // 譜面の名前をキーにして譜面を格納する
-    private Dictionary<string, MasterMusicScoreRecordDataList> musicScoreDictionary;
 
     #region Mono
     
@@ -33,8 +31,17 @@ public class ScreenTitle : MonoBehaviour
     {
         this.titleRoot.SetActive(true);
         this.menuRoot.SetActive(false);
+        
+        // 譜面を読み込み済みの場合はタイトルをすっ飛ばす
+    	if (RhythmGameDataManager.musicScoreDictionary.Count > 0)
+    	{   		
+    		this.titleRoot.SetActive(false);
+    		this.menuRoot.SetActive(true);    		
 
-        this.musicScoreDictionary = new Dictionary<string, MasterMusicScoreRecordDataList>();
+    		this.informationText.text = "譜面の読み込み完了";
+
+    		this.stageText.text = RhythmGameDataManager.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
+    	}
     }
     
     #endregion // Mono
@@ -55,36 +62,38 @@ public class ScreenTitle : MonoBehaviour
     {
         this.kickAudioSource.PlayOneShot(this.kickAudioSource.clip);
 
-        MasterStageRecordData stageRecordData = this.masterStageRecordDataList.dataList[this.currentStageIndex];
+        MasterStageRecordData stageRecordData = RhythmGameDataManager.masterStageRecordDataList.dataList[this.currentStageIndex];
 
         RhythmGameDataManager.masterStageRecordData = stageRecordData;
-        RhythmGameDataManager.musicScoreRecordDataList = this.musicScoreDictionary[stageRecordData.stageName];
+        RhythmGameDataManager.musicScoreRecordDataList = RhythmGameDataManager.musicScoreDictionary[stageRecordData.stageName];
 
         StartCoroutine(loadSceneCoroutine("RhythmGame"));
     }
 
     public void OnClickMinusButton()
     {
-        if (this.masterStageRecordDataList != null && this.masterStageRecordDataList.dataList != null)
+        if (RhythmGameDataManager.masterStageRecordDataList != null && 
+    	    RhythmGameDataManager.masterStageRecordDataList.dataList != null)
         {
             if (this.currentStageIndex == 0)
             {
-                this.currentStageIndex = this.masterStageRecordDataList.dataList.Count - 1;
+                this.currentStageIndex = RhythmGameDataManager.masterStageRecordDataList.dataList.Count - 1;
             }
             else
             {
                 this.currentStageIndex--;
             }
 
-            this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
+            this.stageText.text = RhythmGameDataManager.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
         }
     }
 
     public void OnClickPlusButton()
     {
-        if (this.masterStageRecordDataList != null && this.masterStageRecordDataList.dataList != null)
+        if (RhythmGameDataManager.masterStageRecordDataList != null &&
+    	    RhythmGameDataManager.masterStageRecordDataList.dataList != null)
         {
-            if (this.currentStageIndex == this.masterStageRecordDataList.dataList.Count - 1)
+            if (this.currentStageIndex == RhythmGameDataManager.masterStageRecordDataList.dataList.Count - 1)
             {
                 this.currentStageIndex = 0;
             }
@@ -93,7 +102,7 @@ public class ScreenTitle : MonoBehaviour
                 this.currentStageIndex++;
             }
 
-            this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
+            this.stageText.text = RhythmGameDataManager.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
         }
     }
 
@@ -113,6 +122,8 @@ public class ScreenTitle : MonoBehaviour
 
     private IEnumerator checkUpdate()
     {
+
+    	
         this.informationText.text = "MainSpreadSheet通信開始";
         yield return null;
         
@@ -125,9 +136,9 @@ public class ScreenTitle : MonoBehaviour
 
         masterStage.SetupEntry();
 
-        this.masterStageRecordDataList = masterStage.GetDataList();
+        RhythmGameDataManager.masterStageRecordDataList = masterStage.GetDataList();
 
-        if (this.masterStageRecordDataList != null)
+        if (RhythmGameDataManager.masterStageRecordDataList != null)
         {
            　yield return StartCoroutine(downloadMusicScoreListIfNeeded(masterStage));
         }
@@ -156,7 +167,7 @@ public class ScreenTitle : MonoBehaviour
         //
         //
 
-        foreach (MasterStageRecordData recordData in this.masterStageRecordDataList.dataList)
+        foreach (MasterStageRecordData recordData in RhythmGameDataManager.masterStageRecordDataList.dataList)
         {         
         	this.informationText.text = "譜面読み込み中 " + recordData.stageName;
             yield return null;
@@ -172,7 +183,7 @@ public class ScreenTitle : MonoBehaviour
             masterMusicScore.SetupEntry();
             MasterMusicScoreRecordDataList scoreRecordDataList = masterMusicScore.GetDataList();
 
-            this.musicScoreDictionary.Add(recordData.stageName, scoreRecordDataList);
+            RhythmGameDataManager.musicScoreDictionary.Add(recordData.stageName, scoreRecordDataList);
 
             for (int i=0; i<scoreRecordDataList.dataList.Count; i++)
             {
@@ -183,7 +194,7 @@ public class ScreenTitle : MonoBehaviour
 
         this.informationText.text = "譜面の読み込み完了";
 
-        this.stageText.text = this.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
+        this.stageText.text = RhythmGameDataManager.masterStageRecordDataList.dataList[this.currentStageIndex].stageName;
 
 
         yield return null;
