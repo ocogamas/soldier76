@@ -20,5 +20,7 @@ public class MasterMusicScoreRecordData
     public float time;
 
     // 判定が終わったらTrue
-    public bool isJudgeDone;
+    public bool isDrumJudgeDone;
+    public bool isHihatJudgeDone;
+    public bool isSnareJudgeDone;
 }
