@@ -49,7 +49,7 @@ public class ResponseObjectMusicScore
             }
                        
             string hihat = ResponseObjectManager.GetStringFromDictionary(dic, "hihat");
-            if (uint.TryParse(snare, out data.hihat) == false)
+            if (uint.TryParse(hihat, out data.hihat) == false)
             {
             	data.hihat = 0;
             }

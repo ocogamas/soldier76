@@ -217,10 +217,10 @@ public class ScreenRhythmGame : MonoBehaviour
 
         foreach (MasterMusicScoreRecordData data in RhythmGameDataManager.musicScoreRecordDataList.dataList)
         {
-            if (data.drum > 0)
+            if (data.drum > 0 || data.snare > 0 || data.hihat > 0)
             {
                 data.time = oneProgressTime * (float)data.position;
-            }
+            }            
         }
 
         this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
@@ -264,17 +264,45 @@ public class ScreenRhythmGame : MonoBehaviour
         for (; this.musicScoreProgressIndex < RhythmGameDataManager.musicScoreRecordDataList.dataList.Count; this.musicScoreProgressIndex++)
         {
             MasterMusicScoreRecordData data = RhythmGameDataManager.musicScoreRecordDataList.dataList[this.musicScoreProgressIndex];
-            if (data.drum > 0)                
+            
+            // ノートがあったらbreakする
+            bool isExistNote = false;
+            
+            // ノートがあって、さらにそれについて音を鳴らす場合
+            bool isPlaySound = false;
+            
+            if (data.drum > 0 || data.snare > 0 || data.hihat > 0)                
             {
+            	isExistNote = true;
                 if (data.time <= this.enemyTimer)
                 {
-                    this.musicScoreProgressIndex++;
-
-                    this.drumObject.OnTouchDown();
-                    break;
+                	isPlaySound = true;
                 }
-                break;
             }           
+                        
+            if (isPlaySound)
+            {            	                   
+            	this.musicScoreProgressIndex++;
+            	
+            	if (data.drum > 0)
+            	{
+                	this.drumObject.OnTouchDown();
+            	}
+            	if (data.snare > 0)
+            	{
+            		this.snareObject.OnTouchDown();
+            	}
+            	if (data.hihat > 0)
+            	{
+            		this.hihatObject.OnTouchDown();
+            	}
+            	break;
+            }
+            
+            if (isExistNote)
+            {
+            	break;
+            }
         }
 
         this.enemyTimer += Time.deltaTime;
