@@ -34,6 +34,9 @@ public class ScreenRhythmGame : MonoBehaviour
     [SerializeField] private Text greatCountText;
     [SerializeField] private Text throughMissCountText;
     [SerializeField] private Text uselessMissCountText;
+    
+    [SerializeField] private NoteManager noteManager;
+    
 
     #endregion // SerializeField
 
@@ -75,6 +78,8 @@ public class ScreenRhythmGame : MonoBehaviour
         this.drumObject.RegisterCallbackOnTouchDown(onTouchDownDrumObject);
         this.snareObject.RegisterCallbackOnTouchDown(onTouchDownSnareObject);
         this.hihatObject.RegisterCallbackOnTouchDown(onTouchDownHihatObject);
+        
+        this.noteManager.Setup();
 
         changeState(GameState.Init);
     }
@@ -280,6 +285,7 @@ public class ScreenRhythmGame : MonoBehaviour
         if (this.countDownTimer <= 0.0f)
         {
             this.countDownTimer = 3.0f;
+            this.progressTimer  = -3.0f;
             this.timerText.color = new Color(1.0f, 0.2f, 0.2f);
             changeState(GameState.EnemyCountDown);            
         }
@@ -289,7 +295,11 @@ public class ScreenRhythmGame : MonoBehaviour
     {
         this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
 
+        this.noteManager.UpdateEnemy(this.progressTimer);
+        this.progressTimer += Time.deltaTime;
         this.countDownTimer -= Time.deltaTime;
+        
+        
         if (this.countDownTimer <= 0.0f)
         {
             this.enemyTimer = 0;
@@ -304,6 +314,7 @@ public class ScreenRhythmGame : MonoBehaviour
     private void enemyTurnProcess()
     {
         this.timerText.text = this.enemyTimer.ToString("0.00");
+        this.noteManager.UpdateEnemy(this.progressTimer);
 
         for (; this.musicScoreProgressIndex < RhythmGameDataManager.musicScoreRecordDataList.dataList.Count; this.musicScoreProgressIndex++)
         {
@@ -350,6 +361,7 @@ public class ScreenRhythmGame : MonoBehaviour
         }
 
         this.enemyTimer += Time.deltaTime;
+        this.progressTimer += Time.deltaTime;
 
         if (this.musicScoreProgressIndex >= RhythmGameDataManager.musicScoreRecordDataList.dataList.Count)
         {

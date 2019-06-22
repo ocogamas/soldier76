@@ -2080,6 +2080,7 @@ MonoBehaviour:
   greatCountText: {fileID: 830765990}
   throughMissCountText: {fileID: 1617528016}
   uselessMissCountText: {fileID: 2044690927}
+  noteManager: {fileID: 1826385515}
 --- !u!114 &1826385515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2097,6 +2098,8 @@ MonoBehaviour:
   - {fileID: 1159132854}
   - {fileID: 1864572496}
   - {fileID: 1459663720}
+  notePrefab: {fileID: 7496214589041799206, guid: 3ae00a58aaeb5b143ac8203c79c9811c,
+    type: 3}
 --- !u!1 &1859715555
 GameObject:
   m_ObjectHideFlags: 0
