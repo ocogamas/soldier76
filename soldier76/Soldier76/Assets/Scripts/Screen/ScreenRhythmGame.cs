@@ -277,7 +277,11 @@ public class ScreenRhythmGame : MonoBehaviour
             if (data.drum > 0 || data.snare > 0 || data.hihat > 0)
             {
                 data.time = oneProgressTime * (float)data.position;
-            }            
+            }   
+
+            data.isDrumJudgeDone = false;
+            data.isSnareJudgeDone = false;
+            data.isHihatJudgeDone = false;
         }
 
         this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
