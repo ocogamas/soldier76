@@ -7,7 +7,7 @@ public class NoteManager : MonoBehaviour
 	#region Constant
 	
 	private const float NoteZ = -1.2f;
-	private const float NoteJudgeY = -10.35f;
+	private const float NoteJudgeY = -10.75f;
 	
 	#endregion
 	
@@ -111,6 +111,27 @@ public class NoteManager : MonoBehaviour
 		updateNote();
 	}
 	
+	public void Judge(NoteSoundType soundType, MasterMusicScoreRecordData data)
+	{
+		int soundTypeIndex = (int)soundType;
+		
+		foreach (NoteObject note in this.noteObjectList)
+		{
+			if (note.SoundType == soundType)
+			{
+				if (note.Position == data.position)
+				{
+					note.Judge();
+					break;
+				}
+			}
+		}
+		
+			
+
+		
+	}
+	
 	#endregion // Public
 	
 	
@@ -119,6 +140,9 @@ public class NoteManager : MonoBehaviour
 	private void createNote(MasterMusicScoreRecordData data, NoteSoundType soundType)
 	{
 		NoteObject noteObject = getInactiveNote();
+		
+		noteObject.Position = data.position;
+		noteObject.SoundType = soundType;
 		
 		int soundIndex = (int)soundType;
 		

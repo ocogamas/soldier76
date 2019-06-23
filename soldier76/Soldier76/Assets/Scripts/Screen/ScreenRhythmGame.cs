@@ -37,6 +37,8 @@ public class ScreenRhythmGame : MonoBehaviour
     
     [SerializeField] private NoteManager noteManager;
     
+    [SerializeField] private ParticleSystem[] noteEffects;
+    
 
     #endregion // SerializeField
 
@@ -134,6 +136,8 @@ public class ScreenRhythmGame : MonoBehaviour
             	{
             		judgeFlag = true;
             		data.isDrumJudgeDone = true;
+            		playNoteEffect(NoteSoundType.drum);
+            		this.noteManager.Judge(NoteSoundType.drum, data);
             	}                
             }
 
@@ -162,6 +166,8 @@ public class ScreenRhythmGame : MonoBehaviour
             	{
             		judgeFlag = true;
             		data.isSnareJudgeDone = true;
+            		playNoteEffect(NoteSoundType.snare);
+            		this.noteManager.Judge(NoteSoundType.snare, data);
             	}                
             }
 
@@ -189,6 +195,8 @@ public class ScreenRhythmGame : MonoBehaviour
             	{
             		judgeFlag = true;
             		data.isHihatJudgeDone = true;
+            		playNoteEffect(NoteSoundType.hihat);
+            		this.noteManager.Judge(NoteSoundType.hihat, data);
             	}                
             }
 
@@ -342,14 +350,20 @@ public class ScreenRhythmGame : MonoBehaviour
             	if (data.drum > 0)
             	{
                 	this.drumObject.OnTouchDown();
+                	playNoteEffect(NoteSoundType.drum);
+            		this.noteManager.Judge(NoteSoundType.drum, data);
             	}
             	if (data.snare > 0)
             	{
             		this.snareObject.OnTouchDown();
+                	playNoteEffect(NoteSoundType.snare);
+            		this.noteManager.Judge(NoteSoundType.snare, data);
             	}
             	if (data.hihat > 0)
             	{
-            		this.hihatObject.OnTouchDown();
+            		this.hihatObject.OnTouchDown();            		
+                	playNoteEffect(NoteSoundType.hihat);
+            		this.noteManager.Judge(NoteSoundType.hihat, data);
             	}
             	break;
             }
@@ -487,6 +501,12 @@ public class ScreenRhythmGame : MonoBehaviour
     		}
     	}
     	return returnJudgeDone;
+    }
+    
+    private void playNoteEffect(NoteSoundType soundType)
+    {
+    	int soundTypeIndex = (int)soundType;
+    	this.noteEffects[soundTypeIndex].Play();
     }
 
     #endregion // Private

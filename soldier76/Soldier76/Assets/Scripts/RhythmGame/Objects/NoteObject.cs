@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class NoteObject : MonoBehaviour
 {
-    // 担当するボタン
-    private DrumObject drumObject;
-
     private NoteState noteState;
     
     private float timer;
+    
+    public uint Position { set; get; }
+    public NoteSoundType SoundType { set; get; }
 
     #region Public
 
     public void Setup()
     {
         this.noteState = NoteState.Inactive;
+        
         this.timer = 0;
 
     }
@@ -44,6 +45,17 @@ public class NoteObject : MonoBehaviour
     public bool IsMoving()
     {
     	return this.noteState == NoteState.Moving;
+    }
+    
+    public void Judge()
+    {    	
+        this.noteState = NoteState.Inactive;
+        Vector3 pos = this.transform.localPosition;
+        pos.y = 0;
+        this.transform.localPosition = pos;
+        
+        this.timer = 0;
+       
     }
 
     #endregion // Public
