@@ -401,6 +401,7 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private void playerCountDownProcess()
     {
+        this.noteManager.UpdatePlayer(this.progressTimer);
         this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
         this.countDownTimer -= Time.deltaTime;
         this.progressTimer += Time.deltaTime;
@@ -418,6 +419,7 @@ public class ScreenRhythmGame : MonoBehaviour
     private void playerTurnProcess()
     {
         this.timerText.text = this.playerTimer.ToString("0.00");
+        this.noteManager.UpdatePlayer(this.progressTimer);
 
         foreach (MasterMusicScoreRecordData data in RhythmGameDataManager.musicScoreRecordDataList.dataList)
         {

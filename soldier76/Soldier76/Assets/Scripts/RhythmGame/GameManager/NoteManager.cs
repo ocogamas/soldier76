@@ -30,6 +30,10 @@ public class NoteManager : MonoBehaviour
 	// 敵の譜面の配列参照index
 	private int enemyProgressIndex;
 	
+	
+	// Playerの譜面の配列参照index
+	private int playerProgressIndex;
+	
 	#endregion // Variables
 	
 	
@@ -39,6 +43,7 @@ public class NoteManager : MonoBehaviour
 	{
 		this.noteArriveTime = 1.0f;
 		this.enemyProgressIndex = 0;
+		this.playerProgressIndex = 0;
 		this.noteObjectList = new List<NoteObject>();
 		
 		for (int i=0; i<120; i++)	
@@ -50,6 +55,64 @@ public class NoteManager : MonoBehaviour
 		    noteObject.transform.localPosition = pos;
 		    this.noteObjectList.Add(noteObject);
 		}
+	}
+	
+	public void UpdatePlayer(float progressTimer)
+	{
+		float noteTimer = progressTimer + this.noteArriveTime;
+		
+		for (; this.playerProgressIndex < RhythmGameDataManager.musicScoreRecordDataList.dataList.Count; this.playerProgressIndex++)
+		{
+			MasterMusicScoreRecordData data = RhythmGameDataManager.musicScoreRecordDataList.dataList[this.playerProgressIndex];
+           
+			bool isExistNote = false;
+			bool isCreateNote = false;
+			
+			if (data.drum > 0)
+			{
+				isExistNote = true;
+				
+				if (data.time <= noteTimer)
+				{
+					isCreateNote = true;
+					createNote(data, NoteSoundType.drum);
+				}			
+			}
+			
+			if (data.snare > 0)
+			{						
+				isExistNote = true;
+				
+				if (data.time <= noteTimer)
+				{
+					isCreateNote = true;
+					createNote(data, NoteSoundType.snare);
+				}
+			}
+			
+			if (data.hihat > 0)
+			{					
+				isExistNote = true;
+				
+				if (data.time <= noteTimer)
+				{
+					isCreateNote = true;
+					createNote(data, NoteSoundType.hihat);
+				}
+			}
+
+			if (isCreateNote)
+			{
+				this.playerProgressIndex++;
+			}
+			
+			if (isExistNote)
+			{
+				break;
+			}
+		}
+		
+		updateNote();
 	}
 	
 	public void UpdateEnemy(float progressTimer)
