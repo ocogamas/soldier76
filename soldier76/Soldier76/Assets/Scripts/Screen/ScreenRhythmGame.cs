@@ -34,6 +34,11 @@ public class ScreenRhythmGame : MonoBehaviour
     [SerializeField] private Text greatCountText;
     [SerializeField] private Text throughMissCountText;
     [SerializeField] private Text uselessMissCountText;
+    
+    [SerializeField] private NoteManager noteManager;
+    
+    [SerializeField] private ParticleSystem[] noteEffects;
+    
 
     #endregion // SerializeField
 
@@ -75,6 +80,8 @@ public class ScreenRhythmGame : MonoBehaviour
         this.drumObject.RegisterCallbackOnTouchDown(onTouchDownDrumObject);
         this.snareObject.RegisterCallbackOnTouchDown(onTouchDownSnareObject);
         this.hihatObject.RegisterCallbackOnTouchDown(onTouchDownHihatObject);
+        
+        this.noteManager.Setup();
 
         changeState(GameState.Init);
     }
@@ -129,6 +136,8 @@ public class ScreenRhythmGame : MonoBehaviour
             	{
             		judgeFlag = true;
             		data.isDrumJudgeDone = true;
+            		playNoteEffect(NoteSoundType.drum);
+            		this.noteManager.Judge(NoteSoundType.drum, data);
             	}                
             }
 
@@ -157,6 +166,8 @@ public class ScreenRhythmGame : MonoBehaviour
             	{
             		judgeFlag = true;
             		data.isSnareJudgeDone = true;
+            		playNoteEffect(NoteSoundType.snare);
+            		this.noteManager.Judge(NoteSoundType.snare, data);
             	}                
             }
 
@@ -184,6 +195,8 @@ public class ScreenRhythmGame : MonoBehaviour
             	{
             		judgeFlag = true;
             		data.isHihatJudgeDone = true;
+            		playNoteEffect(NoteSoundType.hihat);
+            		this.noteManager.Judge(NoteSoundType.hihat, data);
             	}                
             }
 
@@ -264,7 +277,11 @@ public class ScreenRhythmGame : MonoBehaviour
             if (data.drum > 0 || data.snare > 0 || data.hihat > 0)
             {
                 data.time = oneProgressTime * (float)data.position;
-            }            
+            }   
+
+            data.isDrumJudgeDone = false;
+            data.isSnareJudgeDone = false;
+            data.isHihatJudgeDone = false;
         }
 
         this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
@@ -280,6 +297,7 @@ public class ScreenRhythmGame : MonoBehaviour
         if (this.countDownTimer <= 0.0f)
         {
             this.countDownTimer = 3.0f;
+            this.progressTimer  = -3.0f;
             this.timerText.color = new Color(1.0f, 0.2f, 0.2f);
             changeState(GameState.EnemyCountDown);            
         }
@@ -289,7 +307,11 @@ public class ScreenRhythmGame : MonoBehaviour
     {
         this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
 
+        this.noteManager.UpdateEnemy(this.progressTimer);
+        this.progressTimer += Time.deltaTime;
         this.countDownTimer -= Time.deltaTime;
+        
+        
         if (this.countDownTimer <= 0.0f)
         {
             this.enemyTimer = 0;
@@ -304,6 +326,7 @@ public class ScreenRhythmGame : MonoBehaviour
     private void enemyTurnProcess()
     {
         this.timerText.text = this.enemyTimer.ToString("0.00");
+        this.noteManager.UpdateEnemy(this.progressTimer);
 
         for (; this.musicScoreProgressIndex < RhythmGameDataManager.musicScoreRecordDataList.dataList.Count; this.musicScoreProgressIndex++)
         {
@@ -331,14 +354,20 @@ public class ScreenRhythmGame : MonoBehaviour
             	if (data.drum > 0)
             	{
                 	this.drumObject.OnTouchDown();
+                	playNoteEffect(NoteSoundType.drum);
+            		this.noteManager.Judge(NoteSoundType.drum, data);
             	}
             	if (data.snare > 0)
             	{
             		this.snareObject.OnTouchDown();
+                	playNoteEffect(NoteSoundType.snare);
+            		this.noteManager.Judge(NoteSoundType.snare, data);
             	}
             	if (data.hihat > 0)
             	{
-            		this.hihatObject.OnTouchDown();
+            		this.hihatObject.OnTouchDown();            		
+                	playNoteEffect(NoteSoundType.hihat);
+            		this.noteManager.Judge(NoteSoundType.hihat, data);
             	}
             	break;
             }
@@ -350,6 +379,7 @@ public class ScreenRhythmGame : MonoBehaviour
         }
 
         this.enemyTimer += Time.deltaTime;
+        this.progressTimer += Time.deltaTime;
 
         if (this.musicScoreProgressIndex >= RhythmGameDataManager.musicScoreRecordDataList.dataList.Count)
         {
@@ -375,6 +405,7 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private void playerCountDownProcess()
     {
+        this.noteManager.UpdatePlayer(this.progressTimer);
         this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
         this.countDownTimer -= Time.deltaTime;
         this.progressTimer += Time.deltaTime;
@@ -392,6 +423,7 @@ public class ScreenRhythmGame : MonoBehaviour
     private void playerTurnProcess()
     {
         this.timerText.text = this.playerTimer.ToString("0.00");
+        this.noteManager.UpdatePlayer(this.progressTimer);
 
         foreach (MasterMusicScoreRecordData data in RhythmGameDataManager.musicScoreRecordDataList.dataList)
         {
@@ -475,6 +507,12 @@ public class ScreenRhythmGame : MonoBehaviour
     		}
     	}
     	return returnJudgeDone;
+    }
+    
+    private void playNoteEffect(NoteSoundType soundType)
+    {
+    	int soundTypeIndex = (int)soundType;
+    	this.noteEffects[soundTypeIndex].Play();
     }
 
     #endregion // Private

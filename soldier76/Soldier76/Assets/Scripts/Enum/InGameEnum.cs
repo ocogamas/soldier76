@@ -9,3 +9,9 @@ public enum NoteState
     Judged,
 }
 
+public enum NoteSoundType
+{
+	drum = 0,
+	snare,
+	hihat
+}
