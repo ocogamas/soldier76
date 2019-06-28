@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UpdateCheckSaveData : MonoBehaviour
+public class UpdateCheckSaveData
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public string stageName;
+	public string bpm;
+	public string version;
 }

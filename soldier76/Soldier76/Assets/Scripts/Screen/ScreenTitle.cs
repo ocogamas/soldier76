@@ -158,24 +158,61 @@ public class ScreenTitle : MonoBehaviour
 
         this.informationText.text = "SubSpreadSheet一覧取得の通信成功";
         yield return null;
-
-        // TODO:kondo 
-        // 必要があれば譜面をDLする
-        // 各譜面のバージョン情報を保存しておき、
-        // 保存していた値とDLした値が異なっていれば、
-        // 譜面をダウンロードすること
-        //
-        //
+        
+        UpdateCheckSaveDataList updateCheckSaveDataList = DataManager.Load<UpdateCheckSaveDataList>(DataManager.UPDATE_INFO);
+        if (updateCheckSaveDataList == null)
+        {
+        	updateCheckSaveDataList = new UpdateCheckSaveDataList();
+        	updateCheckSaveDataList.dataList = new List<UpdateCheckSaveData>();
+        }
 
         foreach (MasterStageRecordData recordData in RhythmGameDataManager.masterStageRecordDataList.dataList)
-        {         
+        { 
+        	bool isSkip = false;
+        	UpdateCheckSaveData updateCheckSaveData = null;
+        	// 保存されているデータバージョンと同じ譜面ならスキップ
+        	foreach (UpdateCheckSaveData data in updateCheckSaveDataList.dataList)
+        	{
+        		if (data.stageName == recordData.stageName)
+        		{
+        			if (data.version == recordData.version)
+        			{
+        				//Debug.Log_blue("譜面読み込みをスキップ " + recordData.stageName, this);
+        				isSkip = true;
+        			}
+        			updateCheckSaveData = data;
+        			break;
+        		}
+        	}
+        	
+        	if (isSkip)
+        	{
+        		continue;
+        	}
+        	
+        	// バージョンを更新
+        	if (updateCheckSaveData != null)
+        	{
+        		Debug.Log_blue("バージョンを更新 " + recordData.stageName + ", version = " + recordData.version, this);
+        		updateCheckSaveData.version = recordData.version;
+        	}
+        	else
+        	{
+        		Debug.Log_blue("新規譜面を登録 " + recordData.stageName + ", version = " + recordData.version, this);
+        		updateCheckSaveData = new UpdateCheckSaveData();
+        		updateCheckSaveData.stageName = recordData.stageName;
+        		updateCheckSaveData.bpm = recordData.bpm;
+        		updateCheckSaveData.version = recordData.version;
+        		updateCheckSaveDataList.dataList.Add(updateCheckSaveData);
+        	}
+        	
+        	
         	this.informationText.text = "譜面読み込み中 " + recordData.stageName;
             yield return null;
  
             string sheetId = spreadSheetInfoDictionary[recordData.stageName];
 
-            //Debug.Log_orange("downloadMusicScoreListIfNeeded > sheetId = " + sheetId, this);
-
+          
             string url = this.networkManager.GetSpreadSheetURLWithSheetId(sheetId);
             string result = this.networkManager.Request(url, recordData.stageName);
 
@@ -191,6 +228,8 @@ public class ScreenTitle : MonoBehaviour
                 //Debug.Log_cyan("downloadMusicScoreListIfNeeded > i=" + i + ", position = " + scoreRecordData.position + ", drum = " + scoreRecordData.drum, this);
             }
         }
+        
+        DataManager.Save(DataManager.UPDATE_INFO, updateCheckSaveDataList);
 
         this.informationText.text = "譜面の読み込み完了";
 

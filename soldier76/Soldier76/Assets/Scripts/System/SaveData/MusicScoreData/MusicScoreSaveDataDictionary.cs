@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MusicScoreSaveDataDictionary : MonoBehaviour
+public class MusicScoreSaveDataDictionary 
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+  
+	// key = stageName
+	public Dictionary<string, MusicScoreSaveData> dataDictionary = new Dictionary<string, MusicScoreSaveData>();
 }
