@@ -42,8 +42,9 @@ public class ScreenTitle : MonoBehaviour
     	{   		
     		this.titleRoot.SetActive(false);
     		this.menuRoot.SetActive(true);    		
+      
+    		StartCoroutine(checkUpdate());
 
-    		this.informationText.text = "譜面の読み込み完了";
 
     	}
     }
@@ -85,10 +86,6 @@ public class ScreenTitle : MonoBehaviour
     	Debug.Log_yellow("onClickRGStartButton > stageName = " + stageName, this);
     	Debug.Log_yellow("onClickRGStartButton > count = " + RhythmGameDataManager.musicScoreDictionary.Count, this);
     	
-    	foreach (string key in RhythmGameDataManager.musicScoreDictionary.Keys)
-    	{
-    		Debug.Log_lime("key = " + key);
-    	}
     	
         RhythmGameDataManager.musicScoreRecordDataList = RhythmGameDataManager.musicScoreDictionary[stageName];
         
@@ -167,15 +164,17 @@ public class ScreenTitle : MonoBehaviour
         }
         
         // 保存されている譜面を読み込み
-        // TODO:kondo ふめんを保存するシステムを実装すること
         MusicScoreSaveDataDictionary musicScoreSaveDataDictionary = DataManager.Load<MusicScoreSaveDataDictionary>(DataManager.MUSIC_SCORE_DATA);
         if (musicScoreSaveDataDictionary != null && musicScoreSaveDataDictionary.dataDictionary != null)
         {
-        	
+        	        	
         	foreach (string stageName in musicScoreSaveDataDictionary.dataDictionary.Keys)
         	{
-        		MusicScoreSaveData musicScoreSaveData = musicScoreSaveDataDictionary.dataDictionary[stageName];      		         
-        		RhythmGameDataManager.musicScoreDictionary.Add(stageName, musicScoreSaveData.musicScoreRecordDataList);
+        		MusicScoreSaveData musicScoreSaveData = musicScoreSaveDataDictionary.dataDictionary[stageName];    
+        		if (RhythmGameDataManager.musicScoreDictionary.ContainsKey(stageName) == false)
+        		{
+            		RhythmGameDataManager.musicScoreDictionary.Add(stageName, musicScoreSaveData.musicScoreRecordDataList);
+        		}
         	}
         	
         }
@@ -191,8 +190,16 @@ public class ScreenTitle : MonoBehaviour
         		{
         			if (data.version == recordData.version)
         			{
-        				//Debug.Log_blue("譜面読み込みをスキップ " + recordData.stageName, this);
-        				isSkip = true;
+        				// 実際に譜面がなかった場合はスキップしない
+        				if (RhythmGameDataManager.musicScoreDictionary.ContainsKey(data.stageName) == false)
+        				{
+        					isSkip = false;
+        					Debug.Log_blue("譜面がなかったので譜面読み込みをスキップしない " + recordData.stageName, this);
+        				}
+        				else
+        				{
+        					isSkip = true;
+        				}
         			}
         			updateCheckSaveData = data;
         			break;
@@ -203,6 +210,7 @@ public class ScreenTitle : MonoBehaviour
         	{
         		continue;
         	}
+        	
         	
         	// バージョンを更新
         	if (updateCheckSaveData != null)
@@ -234,16 +242,33 @@ public class ScreenTitle : MonoBehaviour
             masterMusicScore.SetupEntry();
             MasterMusicScoreRecordDataList scoreRecordDataList = masterMusicScore.GetDataList();
 
+            if (RhythmGameDataManager.musicScoreDictionary.ContainsKey(recordData.stageName))
+            {
+            	RhythmGameDataManager.musicScoreDictionary.Remove(recordData.stageName);
+            }
             RhythmGameDataManager.musicScoreDictionary.Add(recordData.stageName, scoreRecordDataList);
 
-            for (int i=0; i<scoreRecordDataList.dataList.Count; i++)
-            {
-                MasterMusicScoreRecordData scoreRecordData = scoreRecordDataList.dataList[i];
-                //Debug.Log_cyan("downloadMusicScoreListIfNeeded > i=" + i + ", position = " + scoreRecordData.position + ", drum = " + scoreRecordData.drum, this);
-            }
+            
         }
         
         DataManager.Save(DataManager.UPDATE_INFO, updateCheckSaveDataList);
+        
+        #region 譜面の保存
+        MusicScoreSaveDataDictionary saveTarget = new MusicScoreSaveDataDictionary();
+        saveTarget.dataDictionary = new Dictionary<string, MusicScoreSaveData>();
+
+        foreach (string key in RhythmGameDataManager.musicScoreDictionary.Keys)
+        {
+        	MasterMusicScoreRecordDataList recordList = RhythmGameDataManager.musicScoreDictionary[key];
+        	
+        	MusicScoreSaveData saveData = new MusicScoreSaveData();
+        	saveData.musicScoreRecordDataList = recordList;
+        	
+        	saveTarget.dataDictionary.Add(key, saveData);
+        }
+        
+        DataManager.Save(DataManager.MUSIC_SCORE_DATA, saveTarget);
+        #endregion // 譜面の保存
 
         this.informationText.text = "譜面の読み込み完了";
 
@@ -255,7 +280,6 @@ public class ScreenTitle : MonoBehaviour
     
     private IEnumerator setupMusicUI()
     {
-    	Debug.Log_cyan("setupMusicUI > count = " + RhythmGameDataManager.masterStageRecordDataList.dataList.Count, this);
     	for (int i=0; i<RhythmGameDataManager.masterStageRecordDataList.dataList.Count; i++)
     	{
     		MasterStageRecordData data = RhythmGameDataManager.masterStageRecordDataList.dataList[i];
