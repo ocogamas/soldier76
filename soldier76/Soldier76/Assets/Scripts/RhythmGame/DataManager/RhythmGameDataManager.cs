@@ -15,4 +15,7 @@ public class RhythmGameDataManager
 
 
     public static MasterStageRecordDataList masterStageRecordDataList;
+
+
+    public static bool isPracticeMode;
 }

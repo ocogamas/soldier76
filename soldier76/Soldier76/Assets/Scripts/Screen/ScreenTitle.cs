@@ -68,13 +68,13 @@ public class ScreenTitle : MonoBehaviour
     
     private void onClickPracticeButton(string stageName)
     {    
-    	// TODO:kondo Practice情報渡す
+    	RhythmGameDataManager.isPracticeMode = true;
     	onClickRGStartButton(stageName);
     }
     
     private void onClickStandardButton(string stageName)
     {
-    	// TODO:kondo Standard情報渡す
+    	RhythmGameDataManager.isPracticeMode = false;
     	onClickRGStartButton(stageName);
     }
     

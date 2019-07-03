@@ -57,6 +57,14 @@ public class NoteManager : MonoBehaviour
 		}
 	}
 	
+	public void SetNoteAlpha(float alpha)
+	{
+		foreach(NoteObject note in this.noteObjectList)
+		{
+			note.SetAlpha(alpha);
+		}
+	}
+	
 	public void UpdatePlayer(float progressTimer)
 	{
 		float noteTimer = progressTimer + this.noteArriveTime;

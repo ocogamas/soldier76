@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class NoteObject : MonoBehaviour
 {
+	[SerializeField] private MeshRenderer meshRenderer;
+	
     private NoteState noteState;
     
     private float timer;
     
     public uint Position { set; get; }
     public NoteSoundType SoundType { set; get; }
+    
 
     #region Public
 
@@ -19,6 +22,13 @@ public class NoteObject : MonoBehaviour
         
         this.timer = 0;
 
+    }
+    
+    public void SetAlpha(float alpha)
+    {
+    	Color color = this.meshRenderer.material.color;
+    	color.a = alpha;
+    	this.meshRenderer.material.color = color;
     }
 
     public void ExecUpdate(float judgeY, float arriveTime)

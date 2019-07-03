@@ -67,6 +67,8 @@ public class ScreenRhythmGame : MonoBehaviour
     private int greatCount;
     private int throughMissCount;
     private int uselessMissCount;
+    
+    private float noteAlpha;
 
     #endregion // Variables
 
@@ -82,6 +84,8 @@ public class ScreenRhythmGame : MonoBehaviour
         this.hihatObject.RegisterCallbackOnTouchDown(onTouchDownHihatObject);
         
         this.noteManager.Setup();
+        
+        this.noteAlpha = 1.0f;
 
         changeState(GameState.Init);
     }
@@ -409,14 +413,28 @@ public class ScreenRhythmGame : MonoBehaviour
         this.timerText.text = Mathf.CeilToInt(this.countDownTimer).ToString();
         this.countDownTimer -= Time.deltaTime;
         this.progressTimer += Time.deltaTime;
+        
+
+        
         if (this.countDownTimer <= 0.0f)
         {
+        	this.noteAlpha = 0;
             this.playerTimer = 0;
             changeState(GameState.PlayerTurn);
 
             this.musicScoreProgressIndex = 0;
 
             this.timerText.color = new Color(0.2f, 1.0f, 0.2f);
+        }
+               
+        if (RhythmGameDataManager.isPracticeMode == false)
+        {
+        	if (this.countDownTimer <= 1.0f)
+        	{
+        		this.noteAlpha = this.countDownTimer;
+        	}
+        	
+        	this.noteManager.SetNoteAlpha(this.noteAlpha);
         }
     }
 
