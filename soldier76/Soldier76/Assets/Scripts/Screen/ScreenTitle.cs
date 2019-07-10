@@ -42,6 +42,8 @@ public class ScreenTitle : MonoBehaviour
         setInformationText("");
         setInformationText("");
         setInformationText("");
+        setInformationText("");       
+        setInformationText("");
         
         // 譜面を読み込み済みの場合はタイトルをすっ飛ばす
     	if (RhythmGameDataManager.musicScoreDictionary.Count > 0)
@@ -135,7 +137,7 @@ public class ScreenTitle : MonoBehaviour
     	this.informationTexts[this.informationTextIndex].color = new Color(0.0f, 1.0f, 0.3f);
     	
     	this.informationTextIndex++;
-    	if (this.informationTextIndex >= 3)
+    	if (this.informationTextIndex >= this.informationTexts.Length)
     	{
     		this.informationTextIndex = 0;
     	}
