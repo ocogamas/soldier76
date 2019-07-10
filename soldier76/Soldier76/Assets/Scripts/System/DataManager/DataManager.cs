@@ -2,6 +2,8 @@
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 public class DataManager 
@@ -14,9 +16,11 @@ public class DataManager
     {
         Debug.Log_blue ("保存します。" + fileName);
         string path = getPath (fileName);
-        string json = JsonFx.Json.JsonWriter.Serialize (target);
 
-        File.WriteAllText (path, json);
+        FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
+        BinaryFormatter binaryFormatter = new BinaryFormatter();
+        binaryFormatter.Serialize(fileStream, target);
+        fileStream.Close();
     }
 
     public static T Load<T>(string fileName)
@@ -27,9 +31,12 @@ public class DataManager
         {
             return default (T);
         }
-        string json = File.ReadAllText (path);
 
-        T result = JsonFx.Json.JsonReader.Deserialize<T> (json);
+        FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+        BinaryFormatter binaryFormatter = new BinaryFormatter();
+        T result = (T)binaryFormatter.Deserialize(fileStream);
+        fileStream.Close();
+
         return result;
     }
 
