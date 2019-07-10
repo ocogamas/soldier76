@@ -72,6 +72,12 @@ public class ScreenTitle : MonoBehaviour
     }
 
 
+    public void OnClickClearCacheButton()    	
+    {
+    	DataManager.Delete(DataManager.UPDATE_INFO);
+    	DataManager.Delete(DataManager.MUSIC_SCORE_DATA);
+    	setInformationText("更新情報と譜面キャッシュを削除");
+    }
 
     
     private void onClickPracticeButton(string stageName)
