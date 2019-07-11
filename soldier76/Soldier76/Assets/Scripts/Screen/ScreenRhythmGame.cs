@@ -490,7 +490,8 @@ public class ScreenRhythmGame : MonoBehaviour
     }
 
     private void clearProcess()
-    {          
+    {
+        savePlayData();
     	SceneManager.LoadScene("Title");
     }
 
@@ -531,6 +532,72 @@ public class ScreenRhythmGame : MonoBehaviour
     {
     	int soundTypeIndex = (int)soundType;
     	this.noteEffects[soundTypeIndex].Play();
+    }
+
+    private void savePlayData()
+    {
+        PlayRecordSaveDataDictionary data = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
+        if (data == null)
+        {
+            data = new PlayRecordSaveDataDictionary();
+            data.practicePlayRecordSaveDataDictionary = new Dictionary<string, PlayRecordSaveData>();
+            data.standardPlayRecordSaveDataDictionary = new Dictionary<string, PlayRecordSaveData>();
+        }
+
+        string stageName = RhythmGameDataManager.masterStageRecordData.stageName;
+
+        PlayRecordSaveData newData = new PlayRecordSaveData();
+        newData.perfect = this.perfectCount;
+        newData.great = this.greatCount;
+        newData.throughMiss = this.throughMissCount;
+        newData.uselessMiss = this.uselessMissCount;
+
+        if (RhythmGameDataManager.isPracticeMode)
+        {
+            bool existData = data.practicePlayRecordSaveDataDictionary.ContainsKey(stageName);
+            if (existData == false)
+            {
+                data.practicePlayRecordSaveDataDictionary.Add(stageName, newData);
+            }
+            else
+            {
+                PlayRecordSaveData oldData = data.practicePlayRecordSaveDataDictionary[stageName];
+                int oldScore = getScore(oldData);
+                int newScore = getScore(newData);
+
+                if (newScore > oldScore)
+                {
+                    data.practicePlayRecordSaveDataDictionary.Remove(stageName);
+                    data.practicePlayRecordSaveDataDictionary.Add(stageName, newData);
+                }
+            }
+        }
+        else
+        {
+            bool existData = data.standardPlayRecordSaveDataDictionary.ContainsKey(stageName);
+            if (existData == false)
+            {
+                data.standardPlayRecordSaveDataDictionary.Add(stageName, newData);
+            }
+            else
+            {
+                PlayRecordSaveData oldData = data.standardPlayRecordSaveDataDictionary[stageName];
+                int oldScore = getScore(oldData);
+                int newScore = getScore(newData);
+
+                if (newScore > oldScore)
+                {
+                    data.standardPlayRecordSaveDataDictionary.Remove(stageName);
+                    data.standardPlayRecordSaveDataDictionary.Add(stageName, newData);
+                }
+            }
+        }
+    }
+
+    private int getScore(PlayRecordSaveData data)
+    {
+        int score = data.perfect * 1000 + data.great * 100 - data.throughMiss - data.uselessMiss;
+        return score;
     }
 
     #endregion // Private
