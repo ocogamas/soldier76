@@ -15,7 +15,31 @@ public class MusicCell : MonoBehaviour
 	public void Setup(string text)
 	{
 		this.stageNameText.text = text;
-	}
+
+        PlayRecordSaveDataDictionary data = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
+        if (data != null)
+        {
+            if (data.practicePlayRecordSaveDataDictionary.ContainsKey(text))
+            {
+                PlayRecordSaveData practiceData = data.practicePlayRecordSaveDataDictionary[text];
+
+                Debug.Log_cyan("perfect = " + practiceData.perfect);
+                // TODO:kondo
+            }
+
+            if (data.standardPlayRecordSaveDataDictionary.ContainsKey(text))
+            {
+                PlayRecordSaveData standardData = data.standardPlayRecordSaveDataDictionary[text];
+
+                // TODO:kondo
+            }
+
+        }
+        else
+        {
+            Debug.Log_red("data is null " + text, this);
+        }
+    }
 	
 	public void RegisterCallbackPracticeButton(System.Action<string> callback)
 	{
