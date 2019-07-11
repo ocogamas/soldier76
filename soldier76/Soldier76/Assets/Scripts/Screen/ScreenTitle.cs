@@ -20,8 +20,9 @@ public class ScreenTitle : MonoBehaviour
     [SerializeField] private GameObject scrollContent;
     
     [SerializeField] private MusicCell musicCellPrefab;
-    
-    
+
+    [SerializeField] private Text startButtonText;
+    [SerializeField] private Button tutorialButton;
     
     #endregion
 
@@ -38,7 +39,21 @@ public class ScreenTitle : MonoBehaviour
     {
         this.titleRoot.SetActive(true);
         this.menuRoot.SetActive(false);
-        
+
+
+        UpdateCheckSaveDataList updateCheckData = DataManager.Load<UpdateCheckSaveDataList>(DataManager.UPDATE_INFO);
+        if (updateCheckData == null)
+        {
+            this.startButtonText.text = "START\nneed first download \nabout under 1.0MB";
+            this.tutorialButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            this.startButtonText.text = "START";
+            this.tutorialButton.gameObject.SetActive(false);
+        }
+
+
         setInformationText("");
         setInformationText("");
         setInformationText("");
@@ -51,7 +66,7 @@ public class ScreenTitle : MonoBehaviour
     		this.titleRoot.SetActive(false);
     		this.menuRoot.SetActive(true);    		
       
-    		StartCoroutine(checkUpdate());
+    		StartCoroutine(checkUpdate(false));
 
 
     	}
@@ -68,7 +83,13 @@ public class ScreenTitle : MonoBehaviour
     /// </summary>
     public void OnClickTitleStartButton()
     {
-        StartCoroutine(checkUpdate());
+        StartCoroutine(checkUpdate(false));
+    }
+
+    public void OnClickTutorialButton()
+    {
+        StartCoroutine(checkUpdate(true));
+
     }
 
 
@@ -149,7 +170,7 @@ public class ScreenTitle : MonoBehaviour
     	}
     }
 
-    private IEnumerator checkUpdate()
+    private IEnumerator checkUpdate(bool isTutorial)
     {    	
     	setInformationText("MainSpreadSheet通信開始");
         yield return null;
@@ -167,7 +188,7 @@ public class ScreenTitle : MonoBehaviour
 
         if (RhythmGameDataManager.masterStageRecordDataList != null)
         {
-           　yield return StartCoroutine(downloadMusicScoreListIfNeeded(masterStage));
+           　yield return StartCoroutine(downloadMusicScoreListIfNeeded(masterStage, isTutorial));
         }
 
         this.titleRoot.SetActive(false);
@@ -176,7 +197,7 @@ public class ScreenTitle : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage)
+    private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage, bool isTutorial)
     {
     	setInformationText("SubSpreadSheet一覧取得の通信開始");
         yield return null;
@@ -284,7 +305,10 @@ public class ScreenTitle : MonoBehaviour
             }
             RhythmGameDataManager.musicScoreDictionary.Add(recordData.stageName, scoreRecordDataList);
 
-            
+            if (isTutorial)
+            {
+                break;
+            }
         }
         
         DataManager.Save(DataManager.UPDATE_INFO, updateCheckSaveDataList);
@@ -312,10 +336,10 @@ public class ScreenTitle : MonoBehaviour
 
         yield return null;
         
-        StartCoroutine( setupMusicUI());
+        StartCoroutine( setupMusicUI(isTutorial));
     }
 
-    private IEnumerator setupMusicUI()
+    private IEnumerator setupMusicUI(bool isTutorial)
     {
         PlayRecordSaveDataDictionary playData = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
 
@@ -327,7 +351,11 @@ public class ScreenTitle : MonoBehaviour
     		musicCell.RegisterCallbackPracticeButton(onClickPracticeButton);
     		musicCell.RegisterCallbackStandardButton(onClickStandardButton);
     		
-    	}
+            if (isTutorial)
+            {
+                break;
+            }
+        }
     	yield return null;
     }
 
