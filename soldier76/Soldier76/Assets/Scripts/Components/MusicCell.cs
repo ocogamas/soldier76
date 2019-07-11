@@ -5,18 +5,21 @@ using UnityEngine.UI;
 
 public class MusicCell : MonoBehaviour
 {
-  
-	[SerializeField] private Text stageNameText;
-	
-	private System.Action<string> practiceButtonCallback;
+
+    [SerializeField] private Text stageNameText;
+    [SerializeField] private Text practiceClearRatioText;
+    [SerializeField] private Text standardClearRatioText;
+
+    private System.Action<string> practiceButtonCallback;
 	private System.Action<string> standardButtonCallback;
 		
 	
-	public void Setup(string text)
+	public void Setup(string text, PlayRecordSaveDataDictionary data)
 	{
 		this.stageNameText.text = text;
+        this.practiceClearRatioText.text = 0.ToString("D") + "%";
+        this.standardClearRatioText.text = 0.ToString("D") + "%";
 
-        PlayRecordSaveDataDictionary data = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
         if (data != null)
         {
             if (data.practicePlayRecordSaveDataDictionary.ContainsKey(text))
@@ -24,14 +27,17 @@ public class MusicCell : MonoBehaviour
                 PlayRecordSaveData practiceData = data.practicePlayRecordSaveDataDictionary[text];
 
                 Debug.Log_cyan("perfect = " + practiceData.perfect);
-                // TODO:kondo
+
+                float clearRatio = 100*(practiceData.perfect * 100 + practiceData.great * 10) / ((practiceData.perfect + practiceData.great + practiceData.throughMiss) * 100);
+                this.practiceClearRatioText.text = ((int)clearRatio).ToString("D") + "%" ;
             }
 
             if (data.standardPlayRecordSaveDataDictionary.ContainsKey(text))
             {
                 PlayRecordSaveData standardData = data.standardPlayRecordSaveDataDictionary[text];
+                float clearRatio = 100*(standardData.perfect * 100 + standardData.great * 10) / ((standardData.perfect + standardData.great + standardData.throughMiss) * 100);
 
-                // TODO:kondo
+                this.standardClearRatioText.text = ((int)clearRatio).ToString("D") + "%";
             }
 
         }

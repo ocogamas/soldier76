@@ -314,15 +314,16 @@ public class ScreenTitle : MonoBehaviour
         
         StartCoroutine( setupMusicUI());
     }
-    
+
     private IEnumerator setupMusicUI()
     {
-    	for (int i=0; i<RhythmGameDataManager.masterStageRecordDataList.dataList.Count; i++)
+        PlayRecordSaveDataDictionary playData = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
+
+        for (int i=0; i<RhythmGameDataManager.masterStageRecordDataList.dataList.Count; i++)
     	{
     		MasterStageRecordData data = RhythmGameDataManager.masterStageRecordDataList.dataList[i];
-    		  		    		
     		MusicCell musicCell = Object.Instantiate<MusicCell>(this.musicCellPrefab, this.scrollContent.transform);
-    		musicCell.Setup(data.stageName);
+    		musicCell.Setup(data.stageName, playData);
     		musicCell.RegisterCallbackPracticeButton(onClickPracticeButton);
     		musicCell.RegisterCallbackStandardButton(onClickStandardButton);
     		
