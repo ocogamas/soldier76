@@ -503,7 +503,6 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private void changeState(GameState state)
     {
-        Debug.Log_lightblue("changeState > " + this.gameState + " -> " + state, this);
         this.gameState = state;
     }
     
@@ -557,10 +556,12 @@ public class ScreenRhythmGame : MonoBehaviour
             bool existData = data.practicePlayRecordSaveDataDictionary.ContainsKey(stageName);
             if (existData == false)
             {
+            
                 data.practicePlayRecordSaveDataDictionary.Add(stageName, newData);
             }
             else
             {
+           
                 PlayRecordSaveData oldData = data.practicePlayRecordSaveDataDictionary[stageName];
                 int oldScore = getScore(oldData);
                 int newScore = getScore(newData);
@@ -569,6 +570,7 @@ public class ScreenRhythmGame : MonoBehaviour
                 {
                     data.practicePlayRecordSaveDataDictionary.Remove(stageName);
                     data.practicePlayRecordSaveDataDictionary.Add(stageName, newData);
+                
                 }
             }
         }
@@ -592,7 +594,9 @@ public class ScreenRhythmGame : MonoBehaviour
                 }
             }
         }
+        DataManager.Save<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA, data);
     }
+
 
     private int getScore(PlayRecordSaveData data)
     {
