@@ -112,11 +112,11 @@ public class ScreenRhythmGame : MonoBehaviour
         }
 #endif
 
-
+        /*
         this.drumObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
         this.snareObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
         this.hihatObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
-
+        */
         inGameMainProcess();
     }
 
