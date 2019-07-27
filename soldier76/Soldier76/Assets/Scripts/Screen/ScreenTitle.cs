@@ -37,6 +37,7 @@ public class ScreenTitle : MonoBehaviour
     
     void Start()
     {
+    	Application.targetFrameRate = 60; 
         this.titleRoot.SetActive(true);
         this.menuRoot.SetActive(false);
 
