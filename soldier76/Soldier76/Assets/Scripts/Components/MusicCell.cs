@@ -9,6 +9,8 @@ public class MusicCell : MonoBehaviour
     [SerializeField] private Text stageNameText;
     [SerializeField] private Text practiceClearRatioText;
     [SerializeField] private Text standardClearRatioText;
+    [SerializeField] private GameObject practiceFullCombo;
+    [SerializeField] private GameObject standardFullCombo;
 
     private System.Action<string> practiceButtonCallback;
 	private System.Action<string> standardButtonCallback;
@@ -20,6 +22,9 @@ public class MusicCell : MonoBehaviour
         this.practiceClearRatioText.text = 0.ToString("D") + "%";
         this.standardClearRatioText.text = 0.ToString("D") + "%";
 
+        this.practiceFullCombo.SetActive(false);
+        this.standardFullCombo.SetActive(false);
+
         if (data != null)
         {
             if (data.practicePlayRecordSaveDataDictionary.ContainsKey(text))
@@ -30,6 +35,11 @@ public class MusicCell : MonoBehaviour
 
                 float clearRatio = 100*(practiceData.perfect * 100 + practiceData.great * 10) / ((practiceData.perfect + practiceData.great + practiceData.throughMiss) * 100);
                 this.practiceClearRatioText.text = ((int)clearRatio).ToString("D") + "%" ;
+
+                if (practiceData.throughMiss == 0)
+                {
+                    this.practiceFullCombo.SetActive(true);
+                }
             }
 
             if (data.standardPlayRecordSaveDataDictionary.ContainsKey(text))
@@ -38,6 +48,11 @@ public class MusicCell : MonoBehaviour
                 float clearRatio = 100*(standardData.perfect * 100 + standardData.great * 10) / ((standardData.perfect + standardData.great + standardData.throughMiss) * 100);
 
                 this.standardClearRatioText.text = ((int)clearRatio).ToString("D") + "%";
+
+                if (standardData.throughMiss == 0)
+                {
+                    this.standardFullCombo.SetActive(true);
+                }
             }
 
         }
