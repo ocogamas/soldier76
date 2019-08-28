@@ -44,7 +44,11 @@ public class ScreenRhythmGame : MonoBehaviour
 
     #region Const
 
-    private const float PERFECT_INTERVAL = 0.025f;
+    // 参考
+    // 1フレ : 0.016666
+    // 2フレ : 0.033333
+    // 3フレ : 0.050000
+    private const float PERFECT_INTERVAL = 0.040f;
     private const float GREAT_INTERVAL = 0.080f;
 
     #endregion // Const
