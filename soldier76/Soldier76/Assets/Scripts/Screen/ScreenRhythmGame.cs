@@ -40,6 +40,7 @@ public class ScreenRhythmGame : MonoBehaviour
     [SerializeField] private NoteManager noteManager;
     
     [SerializeField] private ParticleSystem[] noteEffects;
+    [SerializeField] private Text[] noteJudgeTexts;
     
 
     #endregion // SerializeField
@@ -59,6 +60,8 @@ public class ScreenRhythmGame : MonoBehaviour
 
 
     #region Variables
+    
+    private float[] noteJudgeTextTimers = new float[3];
 
     private GameState gameState;
     private float countDownTimer;
@@ -96,6 +99,11 @@ public class ScreenRhythmGame : MonoBehaviour
         this.noteManager.Setup();
         
         this.noteAlpha = 1.0f;
+        
+        foreach (Text text in this.noteJudgeTexts)
+        {
+        	text.gameObject.SetActive(false);
+        }
 
         changeState(GameState.Init);
     }
@@ -127,6 +135,20 @@ public class ScreenRhythmGame : MonoBehaviour
         this.snareObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
         this.hihatObject.BodyObject().transform.Rotate(0.05f, -0.01f, 0.001f);
         */
+       
+        for (int i=0; i<(int)NoteSoundType.hihat; i++)
+        {
+        	if (this.noteJudgeTextTimers[i]>0)
+        	{
+        		this.noteJudgeTextTimers[i]-=Time.deltaTime;
+        	}
+        	else
+        	{
+        		this.noteJudgeTextTimers[i] = 0;
+        		this.noteJudgeTexts[i].gameObject.SetActive(false);
+        	}
+        }
+       
         inGameMainProcess();
     }
 
@@ -144,7 +166,7 @@ public class ScreenRhythmGame : MonoBehaviour
             bool judgeFlag = false;
             foreach (MasterMusicScoreRecordData data in RhythmGameDataManager.musicScoreRecordDataList.dataList)
             {
-            	bool judgeResult = calcOneTouchNote(data.drum, data.isDrumJudgeDone, data.time);
+            	bool judgeResult = calcOneTouchNote(data.drum, data.isDrumJudgeDone, data.time, NoteSoundType.drum);
             	
             	if (judgeResult)
             	{
@@ -174,7 +196,7 @@ public class ScreenRhythmGame : MonoBehaviour
             bool judgeFlag = false;
             foreach (MasterMusicScoreRecordData data in RhythmGameDataManager.musicScoreRecordDataList.dataList)
             {
-            	bool judgeResult = calcOneTouchNote(data.snare, data.isSnareJudgeDone, data.time);
+            	bool judgeResult = calcOneTouchNote(data.snare, data.isSnareJudgeDone, data.time, NoteSoundType.snare);
             	
             	if (judgeResult)
             	{
@@ -203,7 +225,7 @@ public class ScreenRhythmGame : MonoBehaviour
             bool judgeFlag = false;
             foreach (MasterMusicScoreRecordData data in RhythmGameDataManager.musicScoreRecordDataList.dataList)
             {
-            	bool judgeResult = calcOneTouchNote(data.hihat, data.isHihatJudgeDone, data.time);
+            	bool judgeResult = calcOneTouchNote(data.hihat, data.isHihatJudgeDone, data.time, NoteSoundType.hihat);
             	
             	if (judgeResult)
             	{
@@ -530,9 +552,10 @@ public class ScreenRhythmGame : MonoBehaviour
         this.gameState = state;
     }
     
-    private bool calcOneTouchNote(uint note, bool isJudgeDone, float time)
+    private bool calcOneTouchNote(uint note, bool isJudgeDone, float time, NoteSoundType noteSoundType)
     {     
     	bool returnJudgeDone = false;
+    	JudgeType judgeType = JudgeType.MISS;
     	if (note > 0 && isJudgeDone == false)
         {        
     		if (this.progressTimer - PERFECT_INTERVAL <= time && time <= this.progressTimer + PERFECT_INTERVAL)
@@ -540,27 +563,43 @@ public class ScreenRhythmGame : MonoBehaviour
                 this.perfectCount++;             
                 this.perfectCountText.text = this.perfectCount.ToString();
                 returnJudgeDone = true;
+                judgeType = JudgeType.PERFECT;
     		}
     		else if (this.progressTimer - GREAT_INTERVAL <= time && time <= this.progressTimer + GREAT_INTERVAL)
     		{                        
     			this.greatCount++;
     			this.greatCountText.text = this.greatCount.ToString();      
     			returnJudgeDone = true;
+                judgeType = JudgeType.GREAT;
     		}
     		else if (this.progressTimer - GOOD_INTERVAL <= time && time <= this.progressTimer + GOOD_INTERVAL)
     		{                        
     			this.goodCount++;
     			this.goodCountText.text = this.goodCount.ToString();      
     			returnJudgeDone = true;
+                judgeType = JudgeType.GOOD;
     		}
     		else if (this.progressTimer - SAFE_INTERVAL <= time && time <= this.progressTimer + SAFE_INTERVAL)
     		{                        
     			this.safeCount++;
     			this.safeCountText.text = this.safeCount.ToString();      
     			returnJudgeDone = true;
+                judgeType = JudgeType.SAFE;
+    		}
+    		
+    		if (judgeType != JudgeType.MISS)
+    		{
+    			playJudgeText(judgeType, noteSoundType);
     		}
     	}
     	return returnJudgeDone;
+    }
+    
+    private void playJudgeText(JudgeType judgeType, NoteSoundType soundType)
+    {
+    	this.noteJudgeTexts[(int)soundType].gameObject.SetActive(true);
+    	this.noteJudgeTexts[(int)soundType].text = judgeType.ToString();
+    	this.noteJudgeTextTimers[(int)soundType] = 1.0f;
     }
     
     private void playNoteEffect(NoteSoundType soundType)

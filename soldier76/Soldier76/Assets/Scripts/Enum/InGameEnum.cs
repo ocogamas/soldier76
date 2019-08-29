@@ -15,3 +15,12 @@ public enum NoteSoundType
 	snare,
 	hihat
 }
+
+public enum JudgeType
+{
+	MISS,
+	SAFE,
+	GOOD,
+	GREAT,
+	PERFECT
+}
