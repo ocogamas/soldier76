@@ -493,8 +493,19 @@ public class ScreenRhythmGame : MonoBehaviour
         this.playerTimer += Time.deltaTime;
 
         // クリア判定
+        // timeが0でない最後のノートを探している
         int lastIndex = RhythmGameDataManager.musicScoreRecordDataList.dataList.Count-1;
-        float waitSeconds = 3.0f;
+        for (int i=lastIndex; i > 0; i--)
+        {
+        	if (RhythmGameDataManager.musicScoreRecordDataList.dataList[i].time > 0)
+        	{
+        		lastIndex = i;
+        		break;
+        	}
+        }
+		const float waitSeconds = 1.5f;
+        
+        
         if (RhythmGameDataManager.musicScoreRecordDataList.dataList[lastIndex].time + waitSeconds < this.playerTimer)
         {
         	changeState(GameState.Clear);
