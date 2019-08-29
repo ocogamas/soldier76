@@ -494,7 +494,8 @@ public class ScreenRhythmGame : MonoBehaviour
 
         // クリア判定
         int lastIndex = RhythmGameDataManager.musicScoreRecordDataList.dataList.Count-1;
-        if (RhythmGameDataManager.musicScoreRecordDataList.dataList[lastIndex].time + 5 < this.playerTimer)
+        float waitSeconds = 3.0f;
+        if (RhythmGameDataManager.musicScoreRecordDataList.dataList[lastIndex].time + waitSeconds < this.playerTimer)
         {
         	changeState(GameState.Clear);
         }
