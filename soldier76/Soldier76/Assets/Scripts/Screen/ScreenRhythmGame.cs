@@ -600,6 +600,22 @@ public class ScreenRhythmGame : MonoBehaviour
     	this.noteJudgeTexts[(int)soundType].gameObject.SetActive(true);
     	this.noteJudgeTexts[(int)soundType].text = judgeType.ToString();
     	this.noteJudgeTextTimers[(int)soundType] = 1.0f;
+    	
+    	switch(judgeType)
+    	{
+    		case JudgeType.PERFECT:
+    			this.noteJudgeTexts[(int)soundType].color = Color.yellow;
+    			break;
+    		case JudgeType.GREAT:
+    			this.noteJudgeTexts[(int)soundType].color = Color.green;
+    			break;
+    		case JudgeType.GOOD:
+    			this.noteJudgeTexts[(int)soundType].color = Color.blue;
+    			break;
+    		case JudgeType.SAFE:
+    			this.noteJudgeTexts[(int)soundType].color = Color.magenta;
+    			break;
+    	}
     }
     
     private void playNoteEffect(NoteSoundType soundType)
