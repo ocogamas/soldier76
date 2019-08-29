@@ -32,6 +32,8 @@ public class ScreenRhythmGame : MonoBehaviour
 
     [SerializeField] private Text perfectCountText;
     [SerializeField] private Text greatCountText;
+    [SerializeField] private Text goodCountText;
+    [SerializeField] private Text safeCountText;
     [SerializeField] private Text throughMissCountText;
     [SerializeField] private Text uselessMissCountText;
     
@@ -49,7 +51,9 @@ public class ScreenRhythmGame : MonoBehaviour
     // 2フレ : 0.033333
     // 3フレ : 0.050000
     private const float PERFECT_INTERVAL = 0.040f;
-    private const float GREAT_INTERVAL = 0.080f;
+    private const float GREAT_INTERVAL = 0.055f;
+    private const float GOOD_INTERVAL = 0.070f;
+    private const float SAFE_INTERVAL = 0.080f;
 
     #endregion // Const
 
@@ -69,6 +73,8 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private int perfectCount;
     private int greatCount;
+    private int goodCount;
+    private int safeCount;
     private int throughMissCount;
     private int uselessMissCount;
     
@@ -273,6 +279,8 @@ public class ScreenRhythmGame : MonoBehaviour
     {
         this.perfectCountText.text = "0";
         this.greatCountText.text = "0";
+        this.goodCountText.text = "0";
+        this.safeCountText.text = "0";
         this.throughMissCountText.text = "0";
         this.uselessMissCountText.text = "0";
 
@@ -527,6 +535,18 @@ public class ScreenRhythmGame : MonoBehaviour
     			this.greatCountText.text = this.greatCount.ToString();      
     			returnJudgeDone = true;
     		}
+    		else if (this.progressTimer - GOOD_INTERVAL <= time && time <= this.progressTimer + GOOD_INTERVAL)
+    		{                        
+    			this.goodCount++;
+    			this.goodCountText.text = this.goodCount.ToString();      
+    			returnJudgeDone = true;
+    		}
+    		else if (this.progressTimer - SAFE_INTERVAL <= time && time <= this.progressTimer + SAFE_INTERVAL)
+    		{                        
+    			this.safeCount++;
+    			this.safeCountText.text = this.safeCount.ToString();      
+    			returnJudgeDone = true;
+    		}
     	}
     	return returnJudgeDone;
     }
@@ -552,6 +572,8 @@ public class ScreenRhythmGame : MonoBehaviour
         PlayRecordSaveData newData = new PlayRecordSaveData();
         newData.perfect = this.perfectCount;
         newData.great = this.greatCount;
+        newData.good = this.goodCount;
+        newData.safe = this.safeCount;
         newData.throughMiss = this.throughMissCount;
         newData.uselessMiss = this.uselessMissCount;
 
@@ -604,7 +626,13 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private int getScore(PlayRecordSaveData data)
     {
-        int score = data.perfect * 1000 + data.great * 100 - data.throughMiss - data.uselessMiss;
+        int score = 
+            data.perfect * 1000 +
+            data.great * 500 +
+            data.good * 300 +
+            data.safe * 100 - 
+            data.throughMiss - 
+            data.uselessMiss;
         return score;
     }
 

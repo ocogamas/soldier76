@@ -33,7 +33,9 @@ public class MusicCell : MonoBehaviour
 
                 Debug.Log_cyan("perfect = " + practiceData.perfect);
 
-                float clearRatio = 100*(practiceData.perfect * 100 + practiceData.great * 10) / ((practiceData.perfect + practiceData.great + practiceData.throughMiss) * 100);
+                float clearRatio = 100*
+                (practiceData.perfect * 100 + practiceData.great * 50 + practiceData.good * 30 + practiceData.safe * 10) /
+                 ((practiceData.perfect + practiceData.great + practiceData.good + practiceData.safe + practiceData.throughMiss) * 100);
                 this.practiceClearRatioText.text = ((int)clearRatio).ToString("D") + "%" ;
 
                 if (practiceData.throughMiss == 0)
@@ -45,7 +47,9 @@ public class MusicCell : MonoBehaviour
             if (data.standardPlayRecordSaveDataDictionary.ContainsKey(text))
             {
                 PlayRecordSaveData standardData = data.standardPlayRecordSaveDataDictionary[text];
-                float clearRatio = 100*(standardData.perfect * 100 + standardData.great * 10) / ((standardData.perfect + standardData.great + standardData.throughMiss) * 100);
+                float clearRatio = 100*
+                (standardData.perfect * 100 + standardData.great * 50 + standardData.good * 30 + standardData.safe * 10) /
+                 ((standardData.perfect + standardData.great + standardData.good + standardData.safe + standardData.throughMiss) * 100);
 
                 this.standardClearRatioText.text = ((int)clearRatio).ToString("D") + "%";
 

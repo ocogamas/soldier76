@@ -7,6 +7,8 @@ public class PlayRecordSaveData
 {
     public int perfect;
     public int great;
+    public int good;
+    public int safe;
     public int throughMiss;
     public int uselessMiss;
 }
