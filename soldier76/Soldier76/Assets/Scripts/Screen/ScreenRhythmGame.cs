@@ -312,8 +312,8 @@ public class ScreenRhythmGame : MonoBehaviour
         this.countDownTimer -= Time.deltaTime;
         if (this.countDownTimer <= 0.0f)
         {
-            this.countDownTimer = 3.0f;
-            this.progressTimer  = -3.0f;
+            this.countDownTimer = 2.0f;
+            this.progressTimer  = -2.0f;
             this.timerText.color = new Color(1.0f, 0.2f, 0.2f);
             changeState(GameState.EnemyCountDown);            
         }
@@ -412,8 +412,8 @@ public class ScreenRhythmGame : MonoBehaviour
         this.countDownTimer -= Time.deltaTime;
         if (this.countDownTimer <= 0.0f)
         {
-            this.countDownTimer = 3.0f;
-            this.progressTimer = -3.0f;
+            this.countDownTimer = 2.0f;
+            this.progressTimer = -2.0f;
             this.timerText.color = new Color(0.2f, 0.2f, 1.0f);
             changeState(GameState.PlayerCountDown);
         }
