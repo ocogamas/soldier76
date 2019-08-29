@@ -301,7 +301,7 @@ public class ScreenRhythmGame : MonoBehaviour
         }
 
         this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
-        this.countDownTimer = 2.0f;
+        this.countDownTimer = 1.25f;
         changeState(GameState.EnemyReady);
     }
 
@@ -400,7 +400,7 @@ public class ScreenRhythmGame : MonoBehaviour
         if (this.musicScoreProgressIndex >= RhythmGameDataManager.musicScoreRecordDataList.dataList.Count)
         {
             this.timerText.color = new Color(1.0f, 1.0f, 1.0f);
-            this.countDownTimer = 2.0f;
+            this.countDownTimer = 1.25f;
             changeState(GameState.PlayerReady);
         }
 
