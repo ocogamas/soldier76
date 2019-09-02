@@ -15,6 +15,7 @@ public class ScreenRhythmGame : MonoBehaviour
         PlayerReady,
         PlayerCountDown,
         PlayerTurn,
+        NewRecord,
         Clear,
     }
 
@@ -43,6 +44,8 @@ public class ScreenRhythmGame : MonoBehaviour
     [SerializeField] private Text[] noteJudgeTexts;
 
     [SerializeField] private Text scoreText;
+    
+    [SerializeField] private Animation newRecordAnimation;
     
 
     #endregion // SerializeField
@@ -294,6 +297,11 @@ public class ScreenRhythmGame : MonoBehaviour
                     playerTurnProcess();
                     break;
                 }
+        	case GameState.NewRecord:
+        		{
+        			newRecordProcess();
+        			break;
+        		}       		
             case GameState.Clear:
                 {
                     clearProcess();
@@ -537,9 +545,22 @@ public class ScreenRhythmGame : MonoBehaviour
         
         if (RhythmGameDataManager.musicScoreRecordDataList.dataList[lastIndex].time + waitSeconds < this.playerTimer)
         {
-        	changeState(GameState.Clear);
+        	if (checkNewRecord())
+        	{
+        		this.newRecordAnimation.gameObject.SetActive(true);
+        		this.newRecordAnimation.Play();
+        		changeState(GameState.NewRecord);
+        	}
+        	else
+        	{
+        	    changeState(GameState.Clear);
+        	}
         }
-
+    }
+    
+    private void newRecordProcess()
+    {
+    	
     }
 
     private void clearProcess()
@@ -551,9 +572,19 @@ public class ScreenRhythmGame : MonoBehaviour
     #endregion // InGameProcess
 
 
+    
+    #region Animation Callback
+    
+    public void OnFinishNewRecordAnimation()
+    {    	
+        changeState(GameState.Clear);
+    }
+    
+    #endregion Animation Callback
+    
 
-    #region Private
-
+    #region Private   
+    
     private void changeState(GameState state)
     {
         this.gameState = state;
@@ -644,6 +675,72 @@ public class ScreenRhythmGame : MonoBehaviour
     	int soundTypeIndex = (int)soundType;
     	this.noteEffects[soundTypeIndex].Play();
     }
+    
+    private bool checkNewRecord()
+    {
+    	Debug.Log_cyan("checkNewRecord");
+        PlayRecordSaveDataDictionary data = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
+        if (data == null)
+        {
+        	return true;
+        }
+        
+        PlayRecordSaveData newData = new PlayRecordSaveData();
+        newData.perfect = this.perfectCount;
+        newData.great = this.greatCount;
+        newData.good = this.goodCount;
+        newData.safe = this.safeCount;
+        newData.throughMiss = this.throughMissCount;
+        newData.uselessMiss = this.uselessMissCount;
+        
+        
+        string stageName = RhythmGameDataManager.masterStageRecordData.stageName;
+        
+        if (RhythmGameDataManager.isPracticeMode)
+        {
+            bool existData = data.practicePlayRecordSaveDataDictionary.ContainsKey(stageName);
+            if (existData == false)
+            {            
+            	return true;
+            }
+            else
+            {           
+                PlayRecordSaveData oldData = data.practicePlayRecordSaveDataDictionary[stageName];
+                int oldScore = getScore(oldData);
+                int newScore = getScore(newData);
+                Debug.Log_cyan("checkNewRecord > old=" + oldScore + ", new=" + newScore);
+
+                if (newScore >= oldScore)
+                {
+                	return true;                
+                }
+            }
+        }
+        else
+        {
+            bool existData = data.standardPlayRecordSaveDataDictionary.ContainsKey(stageName);
+            if (existData == false)
+            {
+            	return true;
+            }
+            else
+            {
+                PlayRecordSaveData oldData = data.standardPlayRecordSaveDataDictionary[stageName];
+                int oldScore = getScore(oldData);
+                int newScore = getScore(newData);
+
+                Debug.Log_cyan("checkNewRecord > old=" + oldScore + ", new=" + newScore);
+                if (newScore >= oldScore)
+                {
+                	return true;
+                }
+            }
+        }
+        
+        
+    	Debug.Log_cyan("checkNewRecord > false");
+        return false;
+    }
 
     private void savePlayData()
     {
@@ -718,9 +815,9 @@ public class ScreenRhythmGame : MonoBehaviour
             data.perfect * 1000 +
             data.great * 500 +
             data.good * 300 +
-            data.safe * 100 - 
-            data.throughMiss - 
-            data.uselessMiss;
+        	data.safe * 100;
+           // data.throughMiss - 
+           // data.uselessMiss;
         return score;
     }
 
