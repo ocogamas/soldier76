@@ -329,7 +329,7 @@ public class ScreenRhythmGame : MonoBehaviour
             {
                 data.time = oneProgressTime * (float)data.position;
 
-                this.totalNotes++;
+                this.totalNotes+= (int)(data.drum + data.snare + data.hihat);
             }   
 
             data.isDrumJudgeDone = false;
