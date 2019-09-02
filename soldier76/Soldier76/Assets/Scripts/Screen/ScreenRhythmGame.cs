@@ -41,6 +41,8 @@ public class ScreenRhythmGame : MonoBehaviour
     
     [SerializeField] private ParticleSystem[] noteEffects;
     [SerializeField] private Text[] noteJudgeTexts;
+
+    [SerializeField] private Text scoreText;
     
 
     #endregion // SerializeField
@@ -80,6 +82,8 @@ public class ScreenRhythmGame : MonoBehaviour
     private int safeCount;
     private int throughMissCount;
     private int uselessMissCount;
+
+    private int totalNotes;
     
     private float noteAlpha;
 
@@ -99,6 +103,7 @@ public class ScreenRhythmGame : MonoBehaviour
         this.noteManager.Setup();
         
         this.noteAlpha = 1.0f;
+        this.scoreText.text = "0";
         
         foreach (Text text in this.noteJudgeTexts)
         {
@@ -315,6 +320,8 @@ public class ScreenRhythmGame : MonoBehaviour
             if (data.drum > 0 || data.snare > 0 || data.hihat > 0)
             {
                 data.time = oneProgressTime * (float)data.position;
+
+                this.totalNotes++;
             }   
 
             data.isDrumJudgeDone = false;
@@ -586,6 +593,8 @@ public class ScreenRhythmGame : MonoBehaviour
     			returnJudgeDone = true;
                 judgeType = JudgeType.SAFE;
     		}
+
+            addScore();
     		
     		if (judgeType != JudgeType.MISS)
     		{
@@ -593,6 +602,18 @@ public class ScreenRhythmGame : MonoBehaviour
     		}
     	}
     	return returnJudgeDone;
+    }
+
+    private void addScore()
+    {
+        float score = this.perfectCount * 100 +
+            this.greatCount * 50 +
+            this.goodCount * 30 +
+            this.safeCount * 10;
+        score /= (100 * this.totalNotes);
+        score *= 100;
+
+        this.scoreText.text = ((int)score).ToString("D");
     }
     
     private void playJudgeText(JudgeType judgeType, NoteSoundType soundType)
