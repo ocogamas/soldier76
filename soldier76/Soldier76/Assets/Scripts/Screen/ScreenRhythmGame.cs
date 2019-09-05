@@ -192,7 +192,8 @@ public class ScreenRhythmGame : MonoBehaviour
                 this.uselessMissCountText.text = this.uselessMissCount.ToString();
             }
         }
-        
+
+        touchButton();
     }
     
     private void onTouchDownSnareObject()
@@ -222,6 +223,7 @@ public class ScreenRhythmGame : MonoBehaviour
                 this.uselessMissCountText.text = this.uselessMissCount.ToString();
             }
         }
+        touchButton();
     }    
     
     private void onTouchDownHihatObject()
@@ -250,6 +252,16 @@ public class ScreenRhythmGame : MonoBehaviour
                 this.uselessMissCount++;
                 this.uselessMissCountText.text = this.uselessMissCount.ToString();
             }
+        }
+        touchButton();
+    }
+
+    private void touchButton()
+    {
+        if (this.gameState == GameState.Clear)
+        {
+            savePlayData();
+            SceneManager.LoadScene("Title");
         }
     }
 
@@ -565,8 +577,6 @@ public class ScreenRhythmGame : MonoBehaviour
 
     private void clearProcess()
     {
-        savePlayData();
-    	SceneManager.LoadScene("Title");
     }
 
     #endregion // InGameProcess
