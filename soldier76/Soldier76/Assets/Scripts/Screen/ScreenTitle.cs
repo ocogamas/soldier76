@@ -62,12 +62,12 @@ public class ScreenTitle : MonoBehaviour
         setInformationText("");
         
         // 譜面を読み込み済みの場合はタイトルをすっ飛ばす
-    	if (RhythmGameDataManager.musicScoreDictionary.Count > 0)
+    	if (RhythmGameDataManager.musicScoreDictionary.Count > 1)
     	{   		
     		this.titleRoot.SetActive(false);
     		this.menuRoot.SetActive(true);    		
       
-    		StartCoroutine(checkUpdate(false));
+    		StartCoroutine(checkUpdate());
 
 
     	}
@@ -84,13 +84,12 @@ public class ScreenTitle : MonoBehaviour
     /// </summary>
     public void OnClickTitleStartButton()
     {
-        StartCoroutine(checkUpdate(false));
+        StartCoroutine(checkUpdate());
     }
 
     public void OnClickTutorialButton()
     {
-        StartCoroutine(checkUpdate(true));
-
+    	setupTutorial();
     }
 
 
@@ -171,7 +170,72 @@ public class ScreenTitle : MonoBehaviour
     	}
     }
 
-    private IEnumerator checkUpdate(bool isTutorial)
+    private void setupTutorial()
+    {
+    	setInformationText("TUTORIAL準備中");
+    	RhythmGameDataManager.masterStageRecordDataList = new MasterStageRecordDataList();
+    	RhythmGameDataManager.masterStageRecordDataList.dataList = new List<MasterStageRecordData>();
+    	MasterStageRecordData stageRecordData = new MasterStageRecordData();
+    	stageRecordData.bpm = "120";
+    	stageRecordData.stageName = "Introduction";
+    	stageRecordData.version = "1";
+    	RhythmGameDataManager.masterStageRecordDataList.dataList.Add(stageRecordData);
+    	
+        this.titleRoot.SetActive(false);
+        this.menuRoot.SetActive(true);
+        
+        // 譜面を読み込み
+        MusicScoreSaveDataDictionary musicScoreSaveDataDictionary = new MusicScoreSaveDataDictionary();
+        
+        MusicScoreSaveData musicScoreSaveData = new MusicScoreSaveData();
+        musicScoreSaveData.musicScoreRecordDataList = new MasterMusicScoreRecordDataList();
+        
+        
+        MasterMusicScoreRecordData musicScoreRecordData = new MasterMusicScoreRecordData();
+        musicScoreRecordData.drum = 1;
+        musicScoreRecordData.position = 0;
+        musicScoreSaveData.musicScoreRecordDataList.dataList.Add(musicScoreRecordData);
+        
+        musicScoreRecordData = new MasterMusicScoreRecordData();
+        musicScoreRecordData.drum = 1;
+        musicScoreRecordData.position = 48;
+        musicScoreSaveData.musicScoreRecordDataList.dataList.Add(musicScoreRecordData);
+        
+        musicScoreRecordData = new MasterMusicScoreRecordData();
+        musicScoreRecordData.drum = 1;
+        musicScoreRecordData.position = 96;
+        musicScoreSaveData.musicScoreRecordDataList.dataList.Add(musicScoreRecordData);
+        	
+        musicScoreRecordData = new MasterMusicScoreRecordData();
+        musicScoreRecordData.drum = 1;
+        musicScoreRecordData.position = 144;
+        musicScoreSaveData.musicScoreRecordDataList.dataList.Add(musicScoreRecordData);
+        
+        if (RhythmGameDataManager.musicScoreDictionary.ContainsKey("Introduction") == false)
+        { 
+            RhythmGameDataManager.musicScoreDictionary.Add("Introduction", musicScoreSaveData.musicScoreRecordDataList); 	
+        }
+        	
+        PlayRecordSaveDataDictionary playData = new PlayRecordSaveDataDictionary();
+        playData.practicePlayRecordSaveDataDictionary = new Dictionary<string, PlayRecordSaveData>();
+      
+        playData.standardPlayRecordSaveDataDictionary = new Dictionary<string, PlayRecordSaveData>();
+       
+        for (int i=0; i<RhythmGameDataManager.masterStageRecordDataList.dataList.Count; i++)
+    	{
+    		MasterStageRecordData data = RhythmGameDataManager.masterStageRecordDataList.dataList[i];
+    		MusicCell musicCell = Object.Instantiate<MusicCell>(this.musicCellPrefab, this.scrollContent.transform);
+    		musicCell.Setup(data.stageName, playData);
+    		musicCell.RegisterCallbackPracticeButton(onClickPracticeButton);
+    		musicCell.RegisterCallbackStandardButton(onClickStandardButton);
+        }
+        
+        
+    	setInformationText("TUTORIAL準備完了");
+    	
+    }
+    
+    private IEnumerator checkUpdate()
     {    	
     	setInformationText("MainSpreadSheet通信開始");
         yield return null;
@@ -189,7 +253,7 @@ public class ScreenTitle : MonoBehaviour
 
         if (RhythmGameDataManager.masterStageRecordDataList != null)
         {
-           　yield return StartCoroutine(downloadMusicScoreListIfNeeded(masterStage, isTutorial));
+           　yield return StartCoroutine(downloadMusicScoreListIfNeeded(masterStage));
         }
 
         this.titleRoot.SetActive(false);
@@ -198,7 +262,7 @@ public class ScreenTitle : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage, bool isTutorial)
+    private IEnumerator downloadMusicScoreListIfNeeded(ResponseObjectMasterStage masterStage)
     {
     	setInformationText("SubSpreadSheet一覧取得の通信開始");
         yield return null;
@@ -305,11 +369,6 @@ public class ScreenTitle : MonoBehaviour
             	RhythmGameDataManager.musicScoreDictionary.Remove(recordData.stageName);
             }
             RhythmGameDataManager.musicScoreDictionary.Add(recordData.stageName, scoreRecordDataList);
-
-            if (isTutorial)
-            {
-                break;
-            }
         }
         
         DataManager.Save(DataManager.UPDATE_INFO, updateCheckSaveDataList);
@@ -337,10 +396,10 @@ public class ScreenTitle : MonoBehaviour
 
         yield return null;
         
-        StartCoroutine( setupMusicUI(isTutorial));
+        StartCoroutine( setupMusicUI());
     }
 
-    private IEnumerator setupMusicUI(bool isTutorial)
+    private IEnumerator setupMusicUI()
     {
         PlayRecordSaveDataDictionary playData = DataManager.Load<PlayRecordSaveDataDictionary>(DataManager.PLAY_RECORD_DATA);
 
@@ -351,11 +410,6 @@ public class ScreenTitle : MonoBehaviour
     		musicCell.Setup(data.stageName, playData);
     		musicCell.RegisterCallbackPracticeButton(onClickPracticeButton);
     		musicCell.RegisterCallbackStandardButton(onClickStandardButton);
-    		
-            if (isTutorial)
-            {
-                break;
-            }
         }
     	yield return null;
     }
