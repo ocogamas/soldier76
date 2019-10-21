@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/RhythmGame.unity
     guid: b841d01e7321d4d0c8715f77b2a8c4b6
+  - enabled: 1
+    path: Assets/Scenes/UGUITest.unity
+    guid: a56b887d52ca6436c929a52686cf2218
   m_configObjects: {}
