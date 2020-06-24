@@ -5,16 +5,19 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Title.unity
     guid: e89e28689da5f4cd5a2537f1a20a31bc
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ingame.unity
     guid: e6a0a5b4fa7b1a64986e27fd58217fee
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/RhythmGame.unity
     guid: b841d01e7321d4d0c8715f77b2a8c4b6
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UGUITest.unity
     guid: a56b887d52ca6436c929a52686cf2218
+  - enabled: 1
+    path: Assets/Scenes/Test.unity
+    guid: b5838ff00623b47afbd81efab7bffdcc
   m_configObjects: {}
